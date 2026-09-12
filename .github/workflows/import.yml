@@ -1,0 +1,22 @@
+name: Import source archive
+on:
+  push:
+    paths:
+      - SL2together-source.zip
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Expand archive
+        shell: bash
+        run: |
+          unzip -o SL2together-source.zip -d .
+          rm -f SL2together-source.zip
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Import SL2together source [skip ci]"
+          git push
