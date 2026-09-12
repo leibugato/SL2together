@@ -1,0 +1,97 @@
+<view class="page-shell edit-page">
+  <view wx:if="{{loading}}" class="loading-state">正在读取设计...</view>
+
+  <block wx:else>
+    <view class="edit-intro">
+      <view class="page-title">{{id ? '编辑设计' : '新建设计'}}</view>
+      <view class="page-subtitle">补充触发时机、数值和资源范围，评估结果会更可靠。</view>
+    </view>
+
+    <view class="form-section">
+      <view class="field-label">
+        内容类型 <text class="required">*</text>
+      </view>
+      <view class="type-select-grid">
+        <button
+          wx:for="{{typeOptions}}"
+          wx:key="value"
+          class="type-select-item {{form.type === item.value ? 'type-select-active' : ''}}"
+          data-index="{{index}}"
+          bindtap="selectType"
+        >
+          {{item.label}}
+        </button>
+      </view>
+    </view>
+
+    <view class="form-field">
+      <text class="field-label">名称 <text class="required">*</text></text>
+      <input
+        class="text-input"
+        value="{{form.name}}"
+        maxlength="60"
+        placeholder="例如：飞刀连击"
+        bindinput="onNameInput"
+      />
+      <text class="field-help">{{form.name.length}} / 60</text>
+    </view>
+
+    <view class="form-field">
+      <text class="field-label">描述与设计 <text class="required">*</text></text>
+      <textarea
+        class="text-area"
+        value="{{form.designText}}"
+        maxlength="5000"
+        auto-height="{{false}}"
+        placeholder="说明效果、触发时机、数值、升级变化和预期体验。至少 20 个字符。"
+        bindinput="onDesignInput"
+      ></textarea>
+      <text class="field-help">{{form.designText.length}} / 5000</text>
+    </view>
+
+    <view class="form-field">
+      <text class="field-label">资源链接</text>
+      <input
+        class="text-input"
+        value="{{form.resourceUrl}}"
+        maxlength="500"
+        placeholder="可选，填写一个美术或音频资源 URL"
+        bindinput="onResourceInput"
+      />
+      <text class="field-help">首版只保存链接，不上传或下载资源文件。</text>
+    </view>
+
+    <view class="form-section extra-section">
+      <view class="section-title">类型补充</view>
+      <view class="page-subtitle">补充字段不是必填，但能减少“信息不足”的判断。</view>
+
+      <view wx:for="{{extraFields}}" wx:key="key" class="form-field">
+        <text class="field-label">{{item.label}}</text>
+        <input
+          class="text-input"
+          type="{{item.type || 'text'}}"
+          value="{{form.extra[item.key]}}"
+          maxlength="200"
+          placeholder="{{item.placeholder}}"
+          data-key="{{item.key}}"
+          bindinput="onExtraInput"
+        />
+      </view>
+    </view>
+
+    <view class="privacy-note">
+      启用真实 AI 后，正文会发送给所配置的第三方模型服务。不要填写个人隐私、付费内容或无权使用的外部资源。
+    </view>
+
+    <view class="bottom-safe"></view>
+    <view class="action-dock">
+      <view class="dock-secondary-row">
+        <button class="secondary-button dock-button" disabled="{{saving}}" bindtap="saveDraft">保存草稿</button>
+        <button class="secondary-button dock-button" disabled="{{saving}}" bindtap="submitOnly">确认提交</button>
+      </view>
+      <button class="primary-button dock-primary-button" disabled="{{saving}}" bindtap="submitAndEvaluate">
+        {{saving ? '处理中...' : '保存并评估'}}
+      </button>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,161 @@
+.home-page {
+  padding-top: 20rpx;
+}
+
+.home-header {
+  padding: 8rpx 4rpx 20rpx;
+}
+
+.setup-notice {
+  margin-top: 24rpx;
+  padding: 30rpx;
+}
+
+.notice-title {
+  color: #303633;
+  font-size: 31rpx;
+  font-weight: 700;
+}
+
+.notice-copy {
+  margin-top: 14rpx;
+  color: #686c68;
+  line-height: 1.7;
+}
+
+.notice-button {
+  margin-top: 24rpx;
+}
+
+.quick-create {
+  padding: 28rpx;
+}
+
+.quick-title {
+  color: #282e2b;
+  font-size: 34rpx;
+  font-weight: 750;
+}
+
+.quick-subtitle {
+  margin-top: 8rpx;
+  color: #777b77;
+  font-size: 24rpx;
+}
+
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14rpx;
+  margin-top: 24rpx;
+}
+
+.type-chip {
+  display: flex;
+  align-items: center;
+  min-height: 78rpx;
+  margin: 0;
+  padding: 0 18rpx;
+  background: #f4efe6;
+  border: 1rpx solid #ddd5c8;
+  border-radius: 10rpx;
+  color: #303633;
+  font-size: 25rpx;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.type-chip-short {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42rpx;
+  height: 42rpx;
+  margin-right: 14rpx;
+  background: #a63d2f;
+  border-radius: 8rpx;
+  color: #fffaf3;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.type-chip-label {
+  flex: 1;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1rpx solid #d6d0c4;
+  border-bottom: 1rpx solid #d6d0c4;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 8rpx;
+}
+
+.stat-block + .stat-block {
+  border-left: 1rpx solid #ded8cc;
+}
+
+.stat-value {
+  color: #a63d2f;
+  font-size: 42rpx;
+  font-weight: 750;
+}
+
+.stat-label {
+  margin-top: 4rpx;
+  color: #747873;
+  font-size: 23rpx;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.heading-action {
+  min-height: 60rpx;
+  margin: 0;
+  padding: 0 8rpx;
+  font-size: 24rpx;
+  line-height: 60rpx;
+}
+
+.record-row {
+  margin-bottom: 16rpx;
+  padding: 24rpx;
+}
+
+.record-top,
+.record-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.record-name {
+  margin-top: 18rpx;
+  color: #252a27;
+  font-size: 31rpx;
+  font-weight: 700;
+}
+
+.record-summary {
+  margin-top: 10rpx;
+  color: #676b67;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.record-bottom {
+  margin-top: 18rpx;
+  color: #858984;
+  font-size: 22rpx;
+}
+

@@ -1,0 +1,173 @@
+.detail-heading {
+  padding: 4rpx 2rpx 22rpx;
+}
+
+.detail-pills {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.detail-title {
+  margin-top: 20rpx;
+  color: #202622;
+  font-size: 43rpx;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+.detail-meta {
+  margin-top: 12rpx;
+  color: #7c807b;
+  font-size: 23rpx;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.evaluation-state-line {
+  margin-top: -8rpx;
+  color: #858984;
+  font-size: 22rpx;
+}
+
+.inline-action {
+  min-height: 56rpx;
+  margin: 0;
+  padding: 0 4rpx;
+  font-size: 24rpx;
+  line-height: 56rpx;
+}
+
+.design-copy {
+  padding: 26rpx;
+  background: #fffcf6;
+  border: 1rpx solid #ded8cc;
+  border-radius: 14rpx;
+  color: #353b37;
+  font-size: 28rpx;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+.extra-list {
+  border-top: 1rpx solid #d8d2c6;
+}
+
+.extra-row {
+  display: grid;
+  grid-template-columns: 180rpx minmax(0, 1fr);
+  gap: 20rpx;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #d8d2c6;
+}
+
+.extra-label {
+  color: #7b7e79;
+  font-size: 24rpx;
+}
+
+.extra-value {
+  color: #323834;
+  font-size: 26rpx;
+  word-break: break-all;
+}
+
+.resource-box {
+  padding: 22rpx 24rpx;
+  background: #e9eeeb;
+  border-left: 6rpx solid #256b65;
+  border-radius: 8rpx;
+}
+
+.resource-url {
+  display: block;
+  color: #245f5a;
+  font-size: 24rpx;
+  line-height: 1.55;
+  word-break: break-all;
+}
+
+.resource-copy {
+  display: block;
+  margin-top: 10rpx;
+  color: #737773;
+  font-size: 22rpx;
+}
+
+.evaluation-section {
+  padding-top: 26rpx;
+  border-top: 1rpx solid #d8d2c6;
+}
+
+.evaluation-empty {
+  padding: 28rpx;
+  background: #ebe6dc;
+  color: #6d716c;
+  line-height: 1.6;
+}
+
+.evaluation-panel {
+  padding: 26rpx;
+  background: #fffcf6;
+  border: 1rpx solid #d9d2c5;
+  border-radius: 14rpx;
+}
+
+.stale-banner {
+  margin: -26rpx -26rpx 24rpx;
+  padding: 18rpx 24rpx;
+  background: #f7e7d7;
+  border-bottom: 1rpx solid #e6c7a6;
+  color: #895a24;
+  font-size: 23rpx;
+  line-height: 1.55;
+}
+
+.evaluation-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.score-label {
+  color: #4f5450;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.evaluation-summary {
+  margin-top: 20rpx;
+  color: #414743;
+  line-height: 1.7;
+}
+
+.evaluation-meta {
+  margin-top: 16rpx;
+  color: #858984;
+  font-size: 22rpx;
+}
+
+.evaluation-button {
+  margin-top: 24rpx;
+}
+
+.record-times {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  color: #898d88;
+  font-size: 22rpx;
+}
+
+.detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-top: 40rpx;
+}

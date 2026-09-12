@@ -1,0 +1,104 @@
+<view class="page-shell detail-page">
+  <view wx:if="{{!cloudConfigured}}" class="empty-state surface">
+    尚未配置云开发环境，无法读取记录详情。
+  </view>
+
+  <view wx:elif="{{loading}}" class="loading-state">正在读取详情...</view>
+
+  <view wx:elif="{{errorMessage}}" class="error-state surface">
+    <view>{{errorMessage}}</view>
+    <button class="text-button" bindtap="load">重新加载</button>
+  </view>
+
+  <block wx:elif="{{submission}}">
+    <view class="detail-heading">
+      <view class="detail-pills">
+        <text class="type-pill">{{typeLabel}}</text>
+        <text class="status-pill status-{{submission.status}}">{{statusLabel}}</text>
+        <text class="status-pill status-{{submission.evaluationStatus}}">评估：{{evaluationStatusLabel}}</text>
+      </view>
+      <view class="detail-title">{{submission.name}}</view>
+      <view class="detail-meta">版本 v{{submission.contentVersion}} · 更新于 {{updatedAtLabel}}</view>
+    </view>
+
+    <view class="section">
+      <view class="section-heading">
+        <view class="section-title">描述与设计</view>
+        <button class="text-button inline-action" bindtap="copyDesign">复制</button>
+      </view>
+      <view class="design-copy">{{submission.designText}}</view>
+    </view>
+
+    <view wx:if="{{extraRows.length}}" class="section">
+      <view class="section-title">类型补充</view>
+      <view class="extra-list">
+        <view wx:for="{{extraRows}}" wx:key="label" class="extra-row">
+          <text class="extra-label">{{item.label}}</text>
+          <text class="extra-value">{{item.value}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{submission.resourceUrl}}" class="section">
+      <view class="section-title">资源链接</view>
+      <view class="resource-box" bindtap="copyResource">
+        <text class="resource-url">{{submission.resourceUrl}}</text>
+        <text class="resource-copy">点击复制</text>
+      </view>
+    </view>
+
+    <view class="section evaluation-section">
+      <view class="section-heading">
+        <view>
+          <view class="section-title">AI 可行性评估</view>
+          <view class="evaluation-state-line">当前状态：{{evaluationStatusLabel}}</view>
+        </view>
+        <button
+          class="text-button inline-action"
+          disabled="{{evaluating}}"
+          bindtap="reEvaluate"
+        >
+          {{evaluating ? '评估中...' : (evaluation ? '重新评估' : '开始评估')}}
+        </button>
+      </view>
+
+      <view wx:if="{{!evaluation}}" class="evaluation-empty">
+        当前设计还没有评估结果。信息完整后可以直接开始评估。
+      </view>
+
+      <view wx:else class="evaluation-panel">
+        <view wx:if="{{evaluationStale}}" class="stale-banner">
+          设计在评估后已修改，以下结果已经过期。请重新评估后再作为参考。
+        </view>
+        <view class="evaluation-summary-row">
+          <text class="difficulty-pill difficulty-{{evaluation.difficulty.level}}">
+            {{evaluation.difficulty.provisional ? '暂定 · ' : ''}}{{evaluation.difficulty.label}}
+          </text>
+          <text class="score-label">{{evaluation.difficulty.score}} / 100</text>
+        </view>
+        <view class="evaluation-summary">{{evaluation.summary}}</view>
+        <view class="evaluation-meta">
+          置信度 {{evaluation.difficulty.confidence}} · {{evaluationCreatedAt}}
+        </view>
+        <button class="secondary-button evaluation-button" bindtap="openEvaluation">查看完整报告</button>
+      </view>
+    </view>
+
+    <view class="section record-times">
+      <text>创建：{{createdAtLabel}}</text>
+      <text>最后更新：{{updatedAtLabel}}</text>
+    </view>
+
+    <view class="detail-actions">
+      <button class="secondary-button" bindtap="editIdea">继续修改</button>
+      <button
+        wx:if="{{submission.status === 'DRAFT'}}"
+        class="primary-button"
+        bindtap="confirmSubmit"
+      >
+        {{evaluation ? '满意，确认提交' : '确认提交'}}
+      </button>
+      <button class="danger-button" bindtap="removeIdea">删除记录</button>
+    </view>
+  </block>
+</view>

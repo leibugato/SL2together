@@ -1,0 +1,54 @@
+<view class="page-shell profile-page">
+  <view class="profile-header">
+    <view class="avatar-mark">工</view>
+    <view class="profile-copy">
+      <view class="page-title">{{appName}}</view>
+      <view class="page-subtitle">微信云开发身份，无需额外注册账号</view>
+    </view>
+  </view>
+
+  <view wx:if="{{!cloudConfigured}}" class="section-note">
+    云环境尚未配置。完成环境 ID 和云函数部署后会显示用户身份。
+  </view>
+
+  <view wx:elif="{{loading}}" class="loading-state">正在读取身份...</view>
+
+  <view wx:elif="{{errorMessage}}" class="error-state surface">
+    <view>{{errorMessage}}</view>
+    <button class="text-button" bindtap="load">重新加载</button>
+  </view>
+
+  <block wx:else>
+    <view class="identity-row">
+      <text class="identity-label">当前用户</text>
+      <text class="identity-value">{{openidLabel}}</text>
+    </view>
+  </block>
+
+  <view class="menu-section">
+    <button class="menu-row" bindtap="openRecords">
+      <text>我的提交记录</text>
+      <text class="menu-arrow">›</text>
+    </button>
+    <button wx:if="{{isAdmin}}" class="menu-row" bindtap="openAdmin">
+      <text>用户数据管理</text>
+      <text class="menu-arrow">›</text>
+    </button>
+    <button class="menu-row" bindtap="showPrivacy">
+      <text>数据与隐私说明</text>
+      <text class="menu-arrow">›</text>
+    </button>
+    <button class="menu-row" bindtap="showDeleteGuide">
+      <text>删除我的数据</text>
+      <text class="menu-arrow">›</text>
+    </button>
+    <button class="menu-row" bindtap="showAbout">
+      <text>关于本工具</text>
+      <text class="menu-arrow">›</text>
+    </button>
+  </view>
+
+  <view class="responsibility">
+    评估结果由规则和 AI 根据当前接口知识库生成，仅作实现难度参考，不代表保证可实装。
+  </view>
+</view>

@@ -1,0 +1,101 @@
+<view class="page-shell list-page">
+  <view class="list-heading">
+    <view>
+      <view class="page-title">提交记录</view>
+      <view class="page-subtitle">共 {{total}} 条，按最后更新时间排序</view>
+    </view>
+    <button class="new-button" bindtap="createIdea">新建</button>
+  </view>
+
+  <view wx:if="{{!cloudConfigured}}" class="empty-state surface">
+    尚未配置云开发环境，请先完成 `miniprogram/config/env.ts` 和云函数部署。
+  </view>
+
+  <block wx:else>
+    <scroll-view class="type-filter" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="filter-row">
+        <button
+          wx:for="{{typeOptions}}"
+          wx:key="value"
+          class="filter-chip {{typeIndex === index ? 'filter-chip-active' : ''}}"
+          data-index="{{index}}"
+          bindtap="selectType"
+        >
+          {{item.label}}
+        </button>
+      </view>
+    </scroll-view>
+
+    <view class="picker-row">
+      <picker
+        mode="selector"
+        range="{{statusOptions}}"
+        range-key="label"
+        value="{{statusIndex}}"
+        bindchange="onStatusChange"
+      >
+        <view class="picker-field">{{statusOptions[statusIndex].label}}</view>
+      </picker>
+      <picker
+        mode="selector"
+        range="{{difficultyOptions}}"
+        range-key="label"
+        value="{{difficultyIndex}}"
+        bindchange="onDifficultyChange"
+      >
+        <view class="picker-field">{{difficultyOptions[difficultyIndex].label}}</view>
+      </picker>
+    </view>
+    <picker
+      mode="selector"
+      range="{{evaluationStatusOptions}}"
+      range-key="label"
+      value="{{evaluationStatusIndex}}"
+      bindchange="onEvaluationStatusChange"
+    >
+      <view class="picker-field evaluation-picker">{{evaluationStatusOptions[evaluationStatusIndex].label}}</view>
+    </picker>
+
+    <view wx:if="{{errorMessage}}" class="error-state surface">
+      <view>{{errorMessage}}</view>
+      <button class="text-button" bindtap="retry">重新加载</button>
+    </view>
+
+    <view wx:elif="{{loading}}" class="loading-state">正在加载记录...</view>
+
+    <view wx:elif="{{!items.length}}" class="empty-state surface">
+      当前筛选条件下没有记录。
+    </view>
+
+    <block wx:else>
+      <view
+        wx:for="{{items}}"
+        wx:key="_id"
+        class="idea-row surface"
+        data-id="{{item._id}}"
+        bindtap="openDetail"
+      >
+        <view class="idea-row-top">
+          <text class="type-pill">{{item.typeLabel}}</text>
+          <text class="status-pill status-{{item.status}}">{{item.statusLabel}}</text>
+        </view>
+        <view class="idea-name">{{item.name}}</view>
+        <view class="idea-summary">{{item.summary}}</view>
+        <view class="idea-row-bottom">
+          <view class="idea-meta-left">
+            <text>{{item.updatedAtLabel}}</text>
+            <text class="evaluation-state">{{item.evaluationStatusLabel}}</text>
+          </view>
+          <view class="idea-meta-right">
+            <text wx:if="{{item.latestEvaluation}}" class="difficulty-pill difficulty-{{item.latestEvaluation.difficulty.level}}">
+              {{item.latestEvaluation.difficulty.label}}
+            </text>
+            <text class="version-label">v{{item.contentVersion}}</text>
+          </view>
+        </view>
+      </view>
+      <view wx:if="{{loadingMore}}" class="loading-state">正在加载更多...</view>
+      <view wx:elif="{{!hasMore && items.length}}" class="list-end">已经到底了</view>
+    </block>
+  </block>
+</view>

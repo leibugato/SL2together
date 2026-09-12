@@ -1,0 +1,91 @@
+<view class="page-shell home-page">
+  <view class="home-header">
+    <view>
+      <view class="page-title">{{appName}}</view>
+      <view class="page-subtitle">记录设计想法，整理技术风险，再决定是否进入实现。</view>
+    </view>
+  </view>
+
+  <view wx:if="{{!cloudConfigured}}" class="surface setup-notice">
+    <view class="notice-title">先配置云开发环境</view>
+    <view class="notice-copy">打开 `miniprogram/config/env.ts`，把微信开发者工具里的云环境 ID 填入 ENV_ID。</view>
+    <button class="secondary-button notice-button" bindtap="openList">先查看页面结构</button>
+  </view>
+
+  <block wx:else>
+    <view class="quick-create surface">
+      <view class="quick-copy">
+        <view class="quick-title">新建一个设计想法</view>
+        <view class="quick-subtitle">选择内容类型后进入完整表单</view>
+      </view>
+      <view class="type-grid">
+        <button
+          wx:for="{{typeOptions}}"
+          wx:key="value"
+          class="type-chip"
+          data-type="{{item.value}}"
+          bindtap="createWithType"
+        >
+          <text class="type-chip-short">{{item.shortLabel}}</text>
+          <text class="type-chip-label">{{item.label}}</text>
+        </button>
+      </view>
+    </view>
+
+    <view wx:if="{{errorMessage}}" class="error-state surface">
+      <view>{{errorMessage}}</view>
+      <button class="text-button" bindtap="load">重新加载</button>
+    </view>
+
+    <view wx:elif="{{loading}}" class="loading-state">正在读取工作台...</view>
+
+    <block wx:else>
+      <view class="stats-grid section">
+        <view class="stat-block">
+          <text class="stat-value">{{stats.total}}</text>
+          <text class="stat-label">全部记录</text>
+        </view>
+        <view class="stat-block">
+          <text class="stat-value">{{stats.drafts}}</text>
+          <text class="stat-label">草稿</text>
+        </view>
+        <view class="stat-block">
+          <text class="stat-value">{{stats.submitted}}</text>
+          <text class="stat-label">已提交</text>
+        </view>
+      </view>
+
+      <view class="section">
+        <view class="section-heading">
+          <view class="section-title">最近记录</view>
+          <button class="text-button heading-action" bindtap="openList">全部记录</button>
+        </view>
+
+        <view wx:if="{{!recent.length}}" class="empty-state surface">
+          还没有设计记录。从上方选择一种内容类型开始。
+        </view>
+
+        <view
+          wx:for="{{recent}}"
+          wx:key="_id"
+          class="record-row surface"
+          data-id="{{item._id}}"
+          bindtap="openDetail"
+        >
+          <view class="record-top">
+            <text class="type-pill">{{item.typeLabel}}</text>
+            <text class="status-pill status-{{item.status}}">{{item.statusLabel}}</text>
+          </view>
+          <view class="record-name">{{item.name}}</view>
+          <view class="record-summary">{{item.summary}}</view>
+          <view class="record-bottom">
+            <text>{{item.updatedAtLabel}}</text>
+            <text wx:if="{{item.latestEvaluation}}" class="difficulty-pill difficulty-{{item.latestEvaluation.difficulty.level}}">
+              {{item.latestEvaluation.difficulty.label}}
+            </text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
+</view>

@@ -1,0 +1,114 @@
+<view class="page-shell result-page">
+  <view wx:if="{{!cloudConfigured}}" class="empty-state surface">
+    尚未配置云开发环境，无法读取评估报告。
+  </view>
+
+  <view wx:elif="{{loading}}" class="loading-state">正在生成报告视图...</view>
+
+  <view wx:elif="{{errorMessage}}" class="error-state surface">
+    <view>{{errorMessage}}</view>
+    <button class="text-button" bindtap="load">重新加载</button>
+  </view>
+
+  <block wx:elif="{{evaluation}}">
+    <view class="result-heading">
+      <view class="result-kicker">实现难度</view>
+      <view class="difficulty-large difficulty-text-{{evaluation.difficulty.level}}">
+        {{evaluation.difficulty.provisional ? '暂定 · ' : ''}}{{evaluation.difficulty.label}}
+      </view>
+      <view class="score-line">
+        <text>{{evaluation.difficulty.score}} / 100</text>
+        <text>置信度 {{evaluation.difficulty.confidence}}</text>
+      </view>
+      <view class="result-summary">{{evaluation.summary}}</view>
+      <view class="result-meta">
+        模型 {{evaluation.model.model}} · 知识库 {{evaluation.model.catalogVersion}} · {{createdLabel}}
+      </view>
+    </view>
+
+    <view wx:if="{{evaluation.implementationBrief}}" class="section implementation-section">
+      <view class="section-title">可能实现方式</view>
+      <view class="implementation-copy">{{evaluation.implementationBrief}}</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">评分维度</view>
+      <view class="dimension-legend">
+        <text>更容易</text>
+        <view class="dimension-scale"></view>
+        <text>更难</text>
+      </view>
+      <view class="dimension-list">
+        <view wx:for="{{dimensions}}" wx:key="key" class="dimension-row">
+          <view class="dimension-top">
+            <text>{{item.label}}</text>
+            <text>{{item.value}} / {{item.max}}</text>
+          </view>
+          <view class="dimension-track">
+            <view
+              class="dimension-fill"
+              style="width: {{item.percent}}%; background-color: {{item.fillColor}};"
+            ></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section report-section">
+      <view class="section-title">主要原因</view>
+      <view wx:for="{{evaluation.reasons}}" wx:key="*this" class="report-item">
+        <text class="report-index">{{index + 1}}</text>
+        <text class="report-copy">{{item}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{evaluation.risks.length}}" class="section report-section">
+      <view class="section-title">主要风险</view>
+      <view wx:for="{{evaluation.risks}}" wx:key="*this" class="report-item risk-item">
+        <text class="report-index">!</text>
+        <text class="report-copy">{{item}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{evaluation.suggestions.length}}" class="section report-section">
+      <view class="section-title">调整建议</view>
+      <view wx:for="{{evaluation.suggestions}}" wx:key="*this" class="report-item suggestion-item">
+        <text class="report-index">→</text>
+        <text class="report-copy">{{item}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{evaluation.missingInformation.length}}" class="section missing-section">
+      <view class="section-title">缺失信息</view>
+      <view class="missing-copy">补充以下信息后重新评估，结果可能明显变化：</view>
+      <view wx:for="{{evaluation.missingInformation}}" wx:key="*this" class="missing-chip">{{item}}</view>
+    </view>
+
+    <view wx:if="{{evaluation.technicalAnchors.length}}" class="section">
+      <view class="section-title">技术依据</view>
+      <view class="anchor-list">
+        <view wx:for="{{evaluation.technicalAnchors}}" wx:key="name" class="anchor-row">
+          <view class="anchor-name">{{item.name}}</view>
+          <view class="anchor-kind">{{item.kind}}</view>
+          <view class="anchor-usage">{{item.usage}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="disclaimer">
+      评估结果由规则和 AI 根据当前接口知识库生成，仅用于辅助判断，不代表保证可实装。最终难度会随游戏版本、资源规模和具体实现方式变化。
+    </view>
+
+    <view class="button-row action-row">
+      <button class="secondary-button" bindtap="editIdea">返回修改</button>
+      <button
+        class="primary-button"
+        disabled="{{submitting || submission.status === 'SUBMITTED'}}"
+        bindtap="confirmSubmit"
+      >
+        {{submission.status === 'SUBMITTED' ? '已提交' : (submitting ? '提交中...' : '满意，确认提交')}}
+      </button>
+    </view>
+    <button class="text-button detail-link" bindtap="openDetail">查看设计详情</button>
+  </block>
+</view>

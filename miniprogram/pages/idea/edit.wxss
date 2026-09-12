@@ -1,0 +1,84 @@
+.edit-page {
+  padding-bottom: 150rpx;
+}
+
+.edit-intro {
+  padding: 4rpx 2rpx 20rpx;
+}
+
+.form-section {
+  margin-top: 32rpx;
+}
+
+.type-select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12rpx;
+}
+
+.type-select-item {
+  min-height: 76rpx;
+  margin: 0;
+  padding: 0 16rpx;
+  background: #ebe6dc;
+  border: 1rpx solid #d9d1c4;
+  border-radius: 10rpx;
+  color: #5d615d;
+  font-size: 25rpx;
+  font-weight: 600;
+  line-height: 76rpx;
+}
+
+.type-select-active {
+  background: #263b36;
+  border-color: #263b36;
+  color: #fffaf3;
+}
+
+.extra-section {
+  padding-top: 26rpx;
+  border-top: 1rpx solid #d6d0c4;
+}
+
+.privacy-note {
+  margin-top: 36rpx;
+  padding: 22rpx 24rpx;
+  background: #ece7de;
+  border-left: 6rpx solid #b78b45;
+  color: #666a66;
+  font-size: 23rpx;
+  line-height: 1.65;
+}
+
+.action-dock {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  padding: 16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 252, 246, 0.97);
+  border-top: 1rpx solid #d8d2c6;
+}
+
+.dock-secondary-row {
+  display: flex;
+  gap: 12rpx;
+}
+
+.dock-button {
+  flex: 1;
+  min-height: 78rpx;
+  margin: 0;
+  padding: 0 8rpx;
+  font-size: 24rpx;
+  line-height: 78rpx;
+}
+
+.dock-primary-button {
+  width: 100%;
+  min-height: 82rpx;
+  margin: 12rpx 0 0;
+  font-size: 27rpx;
+  line-height: 82rpx;
+}

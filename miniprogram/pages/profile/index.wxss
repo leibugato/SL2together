@@ -1,0 +1,90 @@
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  padding: 12rpx 0 28rpx;
+}
+
+.avatar-mark {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 92rpx;
+  height: 92rpx;
+  background: #263b36;
+  border-radius: 18rpx;
+  color: #f4e9d4;
+  font-size: 38rpx;
+  font-weight: 750;
+}
+
+.profile-copy {
+  min-width: 0;
+}
+
+.profile-copy .page-title {
+  margin-top: 0;
+}
+
+.section-note {
+  padding: 28rpx;
+  background: #ede7dc;
+  border-left: 6rpx solid #a63d2f;
+  color: #5f635f;
+  line-height: 1.65;
+}
+
+.identity-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8rpx;
+  padding: 26rpx 4rpx;
+  border-bottom: 1rpx solid #d7d1c5;
+}
+
+.identity-label {
+  color: #656965;
+}
+
+.identity-value {
+  color: #2a302d;
+  font-family: monospace;
+  font-weight: 650;
+}
+
+.menu-section {
+  margin-top: 34rpx;
+  border-top: 1rpx solid #d7d1c5;
+}
+
+.menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 94rpx;
+  margin: 0;
+  padding: 0 4rpx;
+  background: transparent;
+  border-bottom: 1rpx solid #d7d1c5;
+  border-radius: 0;
+  color: #2f3431;
+  font-size: 28rpx;
+  line-height: 94rpx;
+  text-align: left;
+}
+
+.menu-arrow {
+  color: #9a9c97;
+  font-size: 38rpx;
+}
+
+.responsibility {
+  margin-top: 40rpx;
+  color: #7c7f7a;
+  font-size: 23rpx;
+  line-height: 1.7;
+}
+

@@ -1,0 +1,124 @@
+.admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.role-badge {
+  margin-top: 12rpx;
+  padding: 10rpx 16rpx;
+  background: #263b36;
+  border-radius: 999rpx;
+  color: #fffaf3;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.type-filter {
+  width: 100%;
+  margin-top: 26rpx;
+  white-space: nowrap;
+}
+
+.filter-row {
+  display: inline-flex;
+  gap: 12rpx;
+  padding-right: 24rpx;
+}
+
+.filter-chip {
+  min-width: 112rpx;
+  min-height: 64rpx;
+  margin: 0;
+  padding: 0 20rpx;
+  background: #ebe6dc;
+  border-radius: 999rpx;
+  color: #5f635f;
+  font-size: 24rpx;
+  line-height: 64rpx;
+}
+
+.filter-chip-active {
+  background: #263b36;
+  color: #fffaf3;
+}
+
+.status-picker {
+  margin-top: 18rpx;
+}
+
+.user-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120rpx;
+  gap: 12rpx;
+  margin-top: 14rpx;
+}
+
+.user-search-input {
+  height: 76rpx;
+  line-height: 76rpx;
+}
+
+.user-search-button {
+  min-height: 76rpx;
+  margin: 0;
+  padding: 0;
+  font-size: 24rpx;
+  line-height: 76rpx;
+}
+
+.export-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.export-actions button {
+  margin: 0;
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-top: 24rpx;
+}
+
+.admin-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+  padding: 24rpx;
+}
+
+.admin-row checkbox {
+  flex: 0 0 auto;
+  margin-top: 4rpx;
+}
+
+.admin-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.admin-name {
+  margin-top: 14rpx;
+  color: #252a27;
+  font-size: 29rpx;
+  font-weight: 700;
+}
+
+.admin-meta {
+  margin-top: 8rpx;
+  color: #7d817c;
+  font-size: 22rpx;
+  word-break: break-all;
+}

@@ -1,0 +1,20 @@
+{
+  "name": "sl2-mod-design-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "杀戮尖塔 2 MOD 设计收集与 AI 可行性评估微信小程序",
+  "scripts": {
+    "check:cloud": "node --check cloudfunctions/api/index.js && node --check cloudfunctions/adminApi/index.js && node --check cloudfunctions/evaluationRunner/index.js && node --check cloudfunctions/scheduledWorker/index.js && node --check cloudfunctions/systemInit/index.js",
+    "check:miniprogram": "node --check miniprogram/app.ts",
+    "knowledge:build": "node scripts/build-sl2-knowledge.js",
+    "knowledge:check": "node scripts/check-sl2-knowledge.js",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/smoke-test.js && node scripts/check-sl2-knowledge.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}
