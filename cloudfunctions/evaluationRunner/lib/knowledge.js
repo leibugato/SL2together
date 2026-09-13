@@ -277,7 +277,7 @@ const KNOWLEDGE_ENTRIES = [
   ...SOURCE_KNOWLEDGE_ENTRIES,
 ];
 
-function retrieveKnowledge(submission, ruleResult, limit = 5) {
+function retrieveKnowledge(submission, ruleResult, limit = 3) {
   const text = `${submission.name || ''}\n${submission.designText || ''}`;
   const anchors = new Set((ruleResult.technicalAnchors || []).map((item) => item.name));
   const scoredEntries = KNOWLEDGE_ENTRIES.map((entry) => {
@@ -321,8 +321,8 @@ function retrieveKnowledge(submission, ruleResult, limit = 5) {
       id: entry.id,
       title: entry.title,
       kind: entry.kind || 'CURATED',
-      facts: (entry.facts || []).slice(0, 8),
-      anchors: (entry.anchors || []).slice(0, 8),
+      facts: (entry.facts || []).slice(0, 4),
+      anchors: (entry.anchors || []).slice(0, 4),
       risks: (entry.risks || []).slice(0, 2),
       suggestions: (entry.suggestions || []).slice(0, 2),
       source: entry.source || '',

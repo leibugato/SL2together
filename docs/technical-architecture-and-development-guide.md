@@ -441,7 +441,7 @@ MAX_DAILY_EVALUATIONS=10
   "model": {
     "provider": "configured_provider",
     "model": "configured_model",
-    "promptVersion": "eval-v2",
+    "promptVersion": "eval-v4",
     "catalogVersion": "sts2-api-2026.09-r4"
   },
   "createdAt": "serverDate"

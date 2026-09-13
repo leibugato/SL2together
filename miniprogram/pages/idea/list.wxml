@@ -1,4 +1,6 @@
-<view class="page-shell list-page">
+<view class="page-stage">
+  <image class="page-wallpaper" src="/images/wallpaper.jpg" mode="aspectFill"></image>
+  <view class="page-shell list-page">
   <view class="list-heading">
     <view>
       <view class="page-title">提交记录</view>
@@ -98,4 +100,5 @@
       <view wx:elif="{{!hasMore && items.length}}" class="list-end">已经到底了</view>
     </block>
   </block>
+  </view>
 </view>

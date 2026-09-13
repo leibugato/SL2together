@@ -32,7 +32,7 @@ AI_MODEL=服务商控制台当前的聊天模型名
 AI_API_KEY=你的密钥
 AI_TIMEOUT_MS=30000
 AI_JSON_MODE=true
-AI_MAX_COMPLETION_TOKENS=1200
+AI_MAX_COMPLETION_TOKENS=800
 AI_ENABLE_THINKING=false
 ```
 
@@ -43,6 +43,27 @@ AI_ENABLE_THINKING=false
 如果服务商不支持 OpenAI 的 `response_format: {"type":"json_object"}`，将 `AI_JSON_MODE` 改为 `false`。适配层仍会解析模型返回的 JSON，并经过固定 Schema 校验。
 
 如果服务商只支持旧版输出长度参数，改用 `AI_MAX_TOKENS`，并清空 `AI_MAX_COMPLETION_TOKENS`。开启思考模式会增加耗时和输出 Token 消耗，当前结构化评估建议 `AI_ENABLE_THINKING=false`。
+
+## 提速配置
+
+当前评估器默认只读取最相关的 3 个知识片段，每个片段最多 4 条事实，并只把规则评分、维度、技术锚点和缺失信息发送给模型。评估输出限制为：
+
+```text
+reasons: 1 至 4 条
+risks: 0 至 4 条
+suggestions: 0 至 4 条
+missingInformation: 0 至 4 条
+```
+
+低影响和重复条目会被省略。推荐同时设置：
+
+```text
+AI_ENABLE_THINKING=false
+AI_MAX_COMPLETION_TOKENS=800
+AI_TIMEOUT_MS=30000
+```
+
+相同内容、知识库版本、Prompt 版本和模型会命中缓存，不重复调用模型。
 
 建议先用小模型评估 20 至 30 条测试设计，比较：
 

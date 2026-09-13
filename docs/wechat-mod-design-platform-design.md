@@ -506,7 +506,7 @@ MVP 不要求实现公开浏览、多人协作、复杂权限和自定义账户�
   "model": {
     "provider": "configured_provider",
     "model": "configured_model",
-    "promptVersion": "eval-v2",
+    "promptVersion": "eval-v4",
     "catalogVersion": "sts2-api-2026.09-r4"
   },
   "createdAt": "serverDate"

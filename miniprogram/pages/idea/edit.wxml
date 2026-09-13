@@ -1,4 +1,6 @@
-<view class="page-shell edit-page">
+<view class="page-stage">
+  <image class="page-wallpaper" src="/images/wallpaper.jpg" mode="aspectFill"></image>
+  <view class="page-shell edit-page">
   <view wx:if="{{loading}}" class="loading-state">正在读取设计...</view>
 
   <block wx:else>
@@ -94,4 +96,17 @@
       </button>
     </view>
   </block>
+
+  <view wx:if="{{evaluationLoading}}" class="evaluation-loading-mask">
+    <view class="evaluation-loading-card">
+      <image
+        class="evaluation-loading-image"
+        src="/images/evaluation-thinking.png"
+        mode="aspectFit"
+      ></image>
+      <view class="evaluation-loading-title">正在评估设计</view>
+      <view class="evaluation-loading-copy">正在匹配接口、规则与风险，请稍候</view>
+    </view>
+  </view>
+  </view>
 </view>

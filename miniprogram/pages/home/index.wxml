@@ -1,4 +1,6 @@
-<view class="page-shell home-page">
+<view class="page-stage">
+  <image class="page-wallpaper" src="/images/wallpaper.jpg" mode="aspectFill"></image>
+  <view class="page-shell home-page">
   <view class="home-header">
     <view>
       <view class="page-title">{{appName}}</view>
@@ -88,4 +90,5 @@
       </view>
     </block>
   </block>
+  </view>
 </view>

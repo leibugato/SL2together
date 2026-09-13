@@ -1,4 +1,4 @@
-# 尖塔模组工坊
+# SL2Together
 
 《杀戮尖塔 2》MOD 设计收集与 AI 可行性评估微信小程序。
 
@@ -41,7 +41,7 @@ AI_PROVIDER=mock
 AI_MODEL=mock-v1
 MAX_DAILY_EVALUATIONS=20
 CATALOG_VERSION=sts2-api-2026.09-r4
-PROMPT_VERSION=eval-v2
+PROMPT_VERSION=eval-v4
 ```
 
 真实模型使用 `AI_PROVIDER=openai-compatible`，并配置 `AI_BASE_URL`、`AI_API_KEY`、`AI_MODEL`。Key 不得写入仓库或小程序代码。

@@ -268,7 +268,7 @@ function getCatalogVersion() {
 }
 
 function getPromptVersion() {
-  return process.env.PROMPT_VERSION || 'eval-v2';
+  return process.env.PROMPT_VERSION || 'eval-v4';
 }
 
 function getMaxDailyEvaluations() {

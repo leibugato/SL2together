@@ -1,6 +1,6 @@
 page {
   min-height: 100%;
-  background: #f3efe7;
+  background: #ece4d8;
   color: #252a27;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 28rpx;
@@ -19,9 +19,30 @@ button::after {
   border: 0;
 }
 
+.page-stage {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
 .page-shell {
+  position: relative;
+  z-index: 1;
   min-height: 100vh;
   padding: 28rpx 28rpx 56rpx;
+  background: rgba(248, 244, 236, 0.62);
+}
+
+.page-wallpaper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100vh;
+  pointer-events: none;
 }
 
 .page-title {
@@ -39,9 +60,10 @@ button::after {
 }
 
 .surface {
-  background: #fffcf6;
-  border: 1rpx solid #ded8cc;
-  border-radius: 14rpx;
+  background: rgba(255, 252, 246, 0.92);
+  border: 1rpx solid rgba(207, 198, 183, 0.82);
+  border-radius: 20rpx;
+  box-shadow: 0 12rpx 30rpx rgba(67, 53, 41, 0.08);
 }
 
 .section {
@@ -64,7 +86,7 @@ button::after {
 .danger-button,
 .text-button {
   min-height: 88rpx;
-  border-radius: 12rpx;
+  border-radius: 18rpx;
   font-size: 29rpx;
   font-weight: 650;
   line-height: 88rpx;
@@ -72,14 +94,16 @@ button::after {
 }
 
 .primary-button {
-  background: #a63d2f;
+  background: #ad4334;
   color: #fffaf3;
+  box-shadow: 0 10rpx 22rpx rgba(166, 61, 47, 0.2);
 }
 
 .secondary-button {
-  background: #fffcf6;
-  border: 1rpx solid #cfc8bb;
+  background: rgba(255, 252, 246, 0.94);
+  border: 1rpx solid rgba(194, 184, 169, 0.9);
   color: #303633;
+  box-shadow: 0 6rpx 16rpx rgba(67, 53, 41, 0.06);
 }
 
 .danger-button {
@@ -207,11 +231,12 @@ button::after {
 .text-area,
 .picker-field {
   width: 100%;
-  background: #fffcf6;
-  border: 1rpx solid #d8d2c6;
-  border-radius: 12rpx;
+  background: rgba(255, 252, 246, 0.94);
+  border: 1rpx solid rgba(198, 188, 172, 0.9);
+  border-radius: 16rpx;
   color: #252a27;
   font-size: 28rpx;
+  box-shadow: 0 6rpx 16rpx rgba(67, 53, 41, 0.05);
 }
 
 .text-input,
@@ -237,4 +262,61 @@ button::after {
 
 .bottom-safe {
   height: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.evaluation-loading-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  background: rgba(31, 35, 32, 0.42);
+}
+
+.evaluation-loading-card {
+  width: 100%;
+  max-width: 560rpx;
+  padding: 26rpx 28rpx 34rpx;
+  background: rgba(255, 252, 246, 0.97);
+  border: 1rpx solid rgba(220, 211, 197, 0.95);
+  border-radius: 28rpx;
+  box-shadow: 0 24rpx 60rpx rgba(31, 35, 32, 0.22);
+  text-align: center;
+}
+
+.evaluation-loading-image {
+  display: block;
+  width: 330rpx;
+  height: 330rpx;
+  margin: 0 auto;
+  animation: evaluation-float 1.7s ease-in-out infinite;
+}
+
+.evaluation-loading-title {
+  margin-top: 4rpx;
+  color: #303633;
+  font-size: 31rpx;
+  font-weight: 700;
+}
+
+.evaluation-loading-copy {
+  margin-top: 10rpx;
+  color: #77716a;
+  font-size: 23rpx;
+  line-height: 1.55;
+}
+
+@keyframes evaluation-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10rpx);
+  }
 }

@@ -1,4 +1,6 @@
-<view class="page-shell admin-page">
+<view class="page-stage">
+  <image class="page-wallpaper" src="/images/wallpaper.jpg" mode="aspectFill"></image>
+  <view class="page-shell admin-page">
   <view wx:if="{{!cloudConfigured}}" class="empty-state surface">
     尚未配置云开发环境，无法使用数据管理。
   </view>
@@ -98,4 +100,5 @@
       </label>
     </checkbox-group>
   </block>
+  </view>
 </view>

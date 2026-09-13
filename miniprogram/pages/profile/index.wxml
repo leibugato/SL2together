@@ -1,4 +1,6 @@
-<view class="page-shell profile-page">
+<view class="page-stage">
+  <image class="page-wallpaper" src="/images/wallpaper.jpg" mode="aspectFill"></image>
+  <view class="page-shell profile-page">
   <view class="profile-header">
     <view class="avatar-mark">工</view>
     <view class="profile-copy">
@@ -50,5 +52,6 @@
 
   <view class="responsibility">
     评估结果由规则和 AI 根据当前接口知识库生成，仅作实现难度参考，不代表保证可实装。
+  </view>
   </view>
 </view>

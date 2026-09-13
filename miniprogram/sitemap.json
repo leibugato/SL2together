@@ -1,5 +1,5 @@
 {
-  "desc": "尖塔模组工坊页面索引配置",
+  "desc": "SL2Together页面索引配置",
   "rules": [
     {
       "action": "disallow",
@@ -7,4 +7,3 @@
     }
   ]
 }
-

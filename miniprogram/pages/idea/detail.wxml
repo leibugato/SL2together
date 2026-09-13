@@ -1,4 +1,6 @@
-<view class="page-shell detail-page">
+<view class="page-stage">
+  <image class="page-wallpaper" src="/images/wallpaper.jpg" mode="aspectFill"></image>
+  <view class="page-shell detail-page">
   <view wx:if="{{!cloudConfigured}}" class="empty-state surface">
     尚未配置云开发环境，无法读取记录详情。
   </view>
@@ -101,4 +103,17 @@
       <button class="danger-button" bindtap="removeIdea">删除记录</button>
     </view>
   </block>
+
+  <view wx:if="{{evaluating}}" class="evaluation-loading-mask">
+    <view class="evaluation-loading-card">
+      <image
+        class="evaluation-loading-image"
+        src="/images/evaluation-thinking.png"
+        mode="aspectFit"
+      ></image>
+      <view class="evaluation-loading-title">正在重新评估</view>
+      <view class="evaluation-loading-copy">旧结果会保留，完成后自动刷新</view>
+    </view>
+  </view>
+  </view>
 </view>

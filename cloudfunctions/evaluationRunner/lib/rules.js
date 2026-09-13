@@ -299,10 +299,29 @@ function analyze(submission) {
   const filledRatio = required.length
     ? (required.length - missingInformation.length) / required.length
     : 1;
+  const extraCount = Object.values(extra).filter(
+    (value) => value !== undefined && value !== null && String(value).trim() !== '',
+  ).length;
+  const anchorConfidence =
+    (TYPE_ANCHORS[type] || TYPE_ANCHORS.CARD).reduce(
+      (sum, item) => sum + Number(item.confidence || 0.8),
+      0,
+    ) / (TYPE_ANCHORS[type] || TYPE_ANCHORS.CARD).length;
+  const extraRatio = required.length ? Math.min(1, extraCount / required.length) : 1;
+  const uncertaintyText = /自动|任意|动态生成|未定|以后|类似|尽量|可能/;
+  const uncertaintyPenalty = uncertaintyText.test(text) ? 0.08 : 0;
+  const shortPenalty = textLength < 80 ? 0.1 : 0;
   const confidence = clamp(
-    0.42 + Math.min(textLength / 1200, 0.24) + filledRatio * 0.18 - Math.max(0, missingInformation.length - 2) * 0.04,
-    0.35,
-    0.88,
+    0.34 +
+      Math.min(textLength / 2000, 0.12) +
+      filledRatio * 0.12 +
+      extraRatio * 0.08 +
+      ((anchorConfidence - 0.75) / 0.25) * 0.08 -
+      missingInformation.length * 0.03 -
+      uncertaintyPenalty -
+      shortPenalty,
+    0.3,
+    0.84,
   );
 
   reasons.unshift(
@@ -311,13 +330,6 @@ function analyze(submission) {
   if (textLength >= 120) {
     reasons.push('描述包含较完整的效果说明，可以据此识别主要实现路径。');
   }
-  if (!risks.length) {
-    risks.push('仍需在目标游戏版本中核对接口名称、多人行为和资源打包方式。');
-  }
-  if (!suggestions.length) {
-    suggestions.push('进入实现前先用最小样例验证核心命令和注册流程。');
-  }
-
   return {
     difficulty: {
       level: difficulty,
@@ -331,11 +343,11 @@ function analyze(submission) {
       .slice(0, 2)
       .map(([key]) => dimensionLabel(key))
       .join('和')}。`,
-    reasons: reasons.slice(0, 6),
-    risks: risks.slice(0, 5),
-    suggestions: suggestions.slice(0, 5),
-    missingInformation: missingInformation.slice(0, 8),
-    technicalAnchors: TYPE_ANCHORS[type] || TYPE_ANCHORS.CARD,
+    reasons: reasons.slice(0, 4),
+    risks: risks.slice(0, 4),
+    suggestions: suggestions.slice(0, 4),
+    missingInformation: missingInformation.slice(0, 4),
+    technicalAnchors: (TYPE_ANCHORS[type] || TYPE_ANCHORS.CARD).slice(0, 3),
     dimensions: base,
     implementationBrief: buildImplementationBrief(type),
   };

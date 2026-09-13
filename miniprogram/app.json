@@ -9,16 +9,16 @@
     "pages/admin/index"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#F7F3EA",
+    "navigationBarBackgroundColor": "#EFE5D7",
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "尖塔模组工坊",
-    "backgroundColor": "#F3EFE7",
+    "navigationBarTitleText": "SL2Together",
+    "backgroundColor": "#ECE4D8",
     "backgroundTextStyle": "dark"
   },
   "tabBar": {
     "color": "#72736F",
     "selectedColor": "#A63D2F",
-    "backgroundColor": "#FFFCF6",
+    "backgroundColor": "#FFF9F0",
     "borderStyle": "black",
     "list": [
       {

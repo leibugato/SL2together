@@ -29,7 +29,7 @@ assert.equal(card.difficulty.level, 'MEDIUM');
 assert.ok(card.reasons.some((item) => item.includes('多段')));
 assert.ok(card.technicalAnchors.some((item) => item.name === 'CardModel'));
 
-const snippets = retrieveKnowledge(baseSubmission(), card);
+const snippets = retrieveKnowledge(baseSubmission(), card, 5);
 assert.ok(snippets.some((item) => item.id === 'card-core'));
 assert.ok(snippets.some((item) => item.id === 'multi-hit'));
 
@@ -96,6 +96,24 @@ assert.equal(sanitized.technicalAnchors.length, 1);
 assert.equal(sanitized.difficulty.label, '困难');
 assert.ok(sanitized.implementationBrief.length > 0);
 assert.deepEqual(sanitized.missingInformation, ['升级后的具体数值']);
+
+const concise = sanitizeModelResult(
+  {
+    difficulty: 'MEDIUM',
+    score: 42,
+    confidence: 0.8,
+    summary: '测试精简结果。',
+    reasons: ['原因一', '原因一', '原因二', '原因三', '原因四', '原因五'],
+    risks: ['风险一', '风险一', '风险二', '风险三', '风险四', '风险五'],
+    suggestions: [],
+    missingInformation: [],
+    dimensions: card.dimensions,
+  },
+  card,
+);
+assert.ok(concise.reasons.length <= 4);
+assert.ok(concise.risks.length <= 4);
+assert.equal(new Set(concise.reasons).size, concise.reasons.length);
 
 const publicDraft = publicSubmission({
   _id: 'submission_test',

@@ -19,13 +19,24 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function dedupeStrings(value) {
+  const seen = new Set();
+  return value.filter((item) => {
+    const key = item.replace(/\s+/g, '').slice(0, 80);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function cleanStrings(value, maxItems, maxLength) {
   if (!Array.isArray(value)) return [];
-  return value
+  const cleaned = value
     .filter((item) => typeof item === 'string')
     .map((item) => item.trim().slice(0, maxLength))
     .filter(Boolean)
     .slice(0, maxItems);
+  return dedupeStrings(cleaned);
 }
 
 function cleanMissingInformation(value, maxItems) {
@@ -89,21 +100,31 @@ function sanitizeModelResult(raw, fallback) {
     return null;
   }
   const score = clamp(Math.round(Number(raw.score)), 0, 100);
-  const confidence = clamp(Number(raw.confidence), 0, 1);
-  if (!Number.isFinite(score) || !Number.isFinite(confidence)) {
+  if (!Number.isFinite(score)) {
     return null;
   }
   const level = DIFFICULTIES.includes(raw.difficulty) ? raw.difficulty : difficultyFromScore(score);
-  const reasons = cleanStrings(raw.reasons, 6, 300);
-  const summary = String(raw.summary || '').trim().slice(0, 600);
+  const reasons = cleanStrings(raw.reasons, 4, 180);
+  const summary = String(raw.summary || '').trim().slice(0, 360);
   const implementationBrief = String(
     raw.implementationBrief || fallback.implementationBrief || '',
   )
     .trim()
-    .slice(0, 600);
+    .slice(0, 320);
   if (!summary || reasons.length < 1) {
     return null;
   }
+  const missingInformation = cleanMissingInformation(raw.missingInformation, 4);
+  const ruleConfidence = clamp(Number(fallback.difficulty?.confidence ?? 0.5), 0, 1);
+  const rawConfidence = Number(raw.confidence);
+  const modelConfidence = Number.isFinite(rawConfidence)
+    ? clamp(rawConfidence, 0, 1)
+    : ruleConfidence;
+  const confidence = clamp(
+    modelConfidence * 0.55 + ruleConfidence * 0.45 - missingInformation.length * 0.02,
+    0.25,
+    0.95,
+  );
   return {
     difficulty: {
       level,
@@ -115,9 +136,9 @@ function sanitizeModelResult(raw, fallback) {
     summary,
     implementationBrief,
     reasons,
-    risks: cleanStrings(raw.risks, 5, 300),
-    suggestions: cleanStrings(raw.suggestions, 5, 300),
-    missingInformation: cleanMissingInformation(raw.missingInformation, 8),
+    risks: cleanStrings(raw.risks, 4, 180),
+    suggestions: cleanStrings(raw.suggestions, 4, 180),
+    missingInformation,
     technicalAnchors: sanitizeTechnicalAnchors(raw.technicalAnchors, fallback),
     dimensions: sanitizeDimensions(raw.dimensions, fallback),
   };

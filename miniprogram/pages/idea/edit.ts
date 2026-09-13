@@ -26,6 +26,7 @@ Page({
     id: '',
     loading: false,
     saving: false,
+    evaluationLoading: false,
     currentVersion: 0,
     typeOptions: IDEA_TYPES,
     typeIndex: 0,
@@ -154,10 +155,12 @@ Page({
         return;
       }
 
+      this.setData({ evaluationLoading: true });
       try {
         await runEvaluation(submissionId, 'quick');
         wx.redirectTo({ url: `/pages/evaluation/result?submissionId=${submissionId}` });
       } catch (error) {
+        this.setData({ evaluationLoading: false });
         wx.showModal({
           title: '设计已保存，评估未完成',
           content: error instanceof Error ? error.message : '可以稍后在详情页重新评估。',
@@ -172,7 +175,7 @@ Page({
         showCancel: false,
       });
     } finally {
-      this.setData({ saving: false });
+      this.setData({ saving: false, evaluationLoading: false });
     }
   },
 
