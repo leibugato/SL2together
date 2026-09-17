@@ -78,6 +78,14 @@ function requestJson(urlString, token, body, timeoutMs) {
 
 function publicModJob(job) {
   if (!job) return null;
+  let manifest = job.manifest || null;
+  if (typeof job.manifestJson === 'string' && job.manifestJson.trim()) {
+    try {
+      manifest = JSON.parse(job.manifestJson);
+    } catch (error) {
+      manifest = null;
+    }
+  }
   return {
     _id: job._id,
     submissionId: job.submissionId,
@@ -85,7 +93,7 @@ function publicModJob(job) {
     status: job.status,
     contentVersion: job.contentVersion,
     contentHash: job.contentHash,
-    manifest: job.manifest || null,
+    manifest,
     modFileId: job.modFileId || '',
     sourceFileId: job.sourceFileId || '',
     modZipSize: job.modZipSize || 0,
@@ -183,7 +191,7 @@ async function generate(db, cloud, openid, event) {
       contentVersion: submission.contentVersion,
       contentHash: submission.contentHash,
       status: 'QUEUED',
-      manifest: null,
+      manifestJson: '',
       modFileId: '',
       sourceFileId: '',
       modZipSize: 0,
@@ -232,7 +240,7 @@ async function generate(db, cloud, openid, event) {
     await db.collection('mod_generation_jobs').doc(jobId).update({
       data: {
         status: 'SUCCEEDED',
-        manifest: built.manifest || {},
+        manifestJson: JSON.stringify(built.manifest || {}),
         modFileId: modUpload.fileID,
         sourceFileId: sourceUpload.fileID,
         modZipSize: Number(built.modZipSize || 0),

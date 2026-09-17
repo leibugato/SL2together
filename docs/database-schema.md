@@ -121,7 +121,7 @@
 | `contentVersion` | number | 生成时的设计版本 |
 | `contentHash` | string | 生成时的内容哈希 |
 | `status` | string | `QUEUED`、`RUNNING`、`SUCCEEDED`、`FAILED` |
-| `manifest` | object/null | 生成的 MOD manifest |
+| `manifestJson` | string | 生成的 MOD manifest JSON 字符串 |
 | `modFileId` | string | MOD ZIP 的云存储 fileID |
 | `sourceFileId` | string | 源码 ZIP 的云存储 fileID |
 | `modZipSize` | number | MOD ZIP 字节数 |
