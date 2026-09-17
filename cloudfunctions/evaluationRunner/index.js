@@ -1,4 +1,5 @@
 const cloud = require('wx-server-sdk');
+const crypto = require('crypto');
 const { AppError } = require('./lib/errors');
 const { retrieveKnowledge } = require('./lib/knowledge');
 const { analyze } = require('./lib/rules');
@@ -13,6 +14,10 @@ const command = db.command;
 
 function createRequestId() {
   return `eval_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createOwnerTag(openid) {
+  return crypto.createHash('sha256').update(String(openid || '')).digest('hex').slice(0, 8).toUpperCase();
 }
 
 function success(data, requestId) {
@@ -159,7 +164,10 @@ async function runJob(jobId, callerOpenid, systemAccess) {
     await updateSubmissionIfCurrent(runningJob, {
       evaluationStatus: 'RUNNING',
     });
-    const ruleResult = analyze(submission);
+    const ruleResult = analyze({
+      ...submission,
+      ownerTag: createOwnerTag(runningJob._openid),
+    });
     const knowledgeSnippets = retrieveKnowledge(submission, ruleResult);
     const generated = await provider.evaluate({
       submission: {

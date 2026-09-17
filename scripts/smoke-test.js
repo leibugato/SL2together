@@ -160,12 +160,17 @@ assert.throws(() => normalizeShareCode('SL2-INVALID'));
 const generatedCard = buildRuleModSpec(
   baseSubmission({
     _id: 'submission_card',
+    ownerTag: 'A1B2C3D4',
     type: 'CARD',
     designText: '造成6点伤害。消耗。被消耗的时候，在自动出牌阶段自动打出。',
     extra: { cost: 1, cardType: '攻击', rarity: '普通' },
   }),
 );
 assert.equal(generatedCard.supported, true);
+assert.match(generatedCard.spec.mod.id, /^sl2t_a1b2c3d4_/);
+assert.ok(generatedCard.spec.mod.name.includes('A1B2C3D4'));
+assert.ok(generatedCard.spec.mod.name.includes('飞刀连击'));
+assert.ok(generatedCard.spec.content.id.includes('A1B2C3D4'));
 assert.equal(generatedCard.spec.content.card.effects[0].amount, 6);
 assert.ok(generatedCard.spec.content.card.keywords.includes('EXHAUST'));
 assert.ok(

@@ -162,4 +162,10 @@ Page({
       this.setData({ sharingMod: false });
     }
   },
+
+  copyTestCommand(event: WechatMiniprogram.TouchEvent) {
+    const command = String(event.currentTarget.dataset.command || '');
+    if (!command) return;
+    wx.setClipboardData({ data: command });
+  },
 });

@@ -182,6 +182,20 @@ export interface ModGenerationJob {
     name: string;
     version: string;
   } | null;
+  testGuide: {
+    title: string;
+    consoleKey: string;
+    modId: string;
+    modName: string;
+    contentId: string;
+    steps: string[];
+    commands: Array<{
+      label: string;
+      command: string;
+      description: string;
+    }>;
+    notes: string[];
+  } | null;
   modFileId: string;
   sourceFileId: string;
   modZipSize: number;

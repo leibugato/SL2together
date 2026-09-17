@@ -15,6 +15,7 @@
 ├── build/<mod-id>.json
 ├── src/Core/Models/Cards/
 ├── images/
+├── QUICK_TEST.md
 └── <mod-id>/localization/zhs/
 ```
 
@@ -26,6 +27,8 @@ build/<mod-id>.pck
 dist/<mod-id>.zip
 dist/<mod-id>-source.zip
 ```
+
+生成名称包含用户短标识和设计名，例如 `用户A1B2C3D4·焚烧打击`。`QUICK_TEST.md` 同时包含在 MOD ZIP 和源码 ZIP 中，并提供游戏控制台测试命令。
 
 ## 环境变量
 

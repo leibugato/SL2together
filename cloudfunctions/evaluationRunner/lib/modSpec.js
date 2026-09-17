@@ -80,14 +80,31 @@ function makeModId(contentId) {
   return `sl2t_${String(contentId).toLowerCase()}`.slice(0, 48);
 }
 
+function userTag(submission) {
+  return String(submission.ownerTag || 'LOCAL')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 8) || 'LOCAL';
+}
+
+function contentId(submission, prefix) {
+  const source = String(submission._id || 'ID').toUpperCase().replace(/[^A-Z0-9_]/g, '');
+  return `${prefix}_${userTag(submission)}_${source}`.slice(0, 64);
+}
+
 function baseSpec(submission) {
+  const tag = userTag(submission);
+  const shortId = String(submission._id || 'idea')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+    .slice(-8);
   return {
     schemaVersion: 1,
     mod: {
-      id: makeModId(submission._id || 'idea'),
-      name: submission.name || '未命名设计',
+      id: makeModId(`${tag}_${shortId}`),
+      name: `用户${tag}·${submission.name || '未命名设计'}`,
       author: 'SL2Together',
-      description: `根据设计「${submission.name || '未命名设计'}」自动生成。`,
+      description: `根据用户${tag}的设计「${submission.name || '未命名设计'}」自动生成。`,
       version: '1.0.0',
     },
   };
@@ -163,7 +180,7 @@ function buildCardSpec(submission) {
   const spec = baseSpec(submission);
   spec.content = {
     kind: 'CARD',
-    id: `CARD_${String(submission._id || 'ID').toUpperCase()}`.slice(0, 64),
+    id: contentId(submission, 'CARD'),
     name: submission.name || '未命名卡牌',
     description: submission.designText,
     card: {
@@ -246,7 +263,7 @@ function buildRelicSpec(submission) {
   const spec = baseSpec(submission);
   spec.content = {
     kind: 'RELIC',
-    id: `RELIC_${String(submission._id || 'ID').toUpperCase()}`.slice(0, 64),
+    id: contentId(submission, 'RELIC'),
     name: submission.name || '未命名遗物',
     description: submission.designText,
     relic: {
@@ -288,7 +305,7 @@ function buildPowerSpec(submission) {
   const spec = baseSpec(submission);
   spec.content = {
     kind: 'POWER',
-    id: `POWER_${String(submission._id || 'ID').toUpperCase()}`.slice(0, 64),
+    id: contentId(submission, 'POWER'),
     name: submission.name || '未命名 Buff',
     description: submission.designText,
     power: {

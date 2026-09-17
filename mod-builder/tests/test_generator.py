@@ -8,6 +8,7 @@ from pathlib import Path
 
 from sl2modgen.render import generate_project
 from sl2modgen.spec import SpecError, analyze_support, validate_mod_spec
+from sl2modgen.test_guide import build_test_guide, render_test_guide_markdown
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -70,6 +71,17 @@ class GeneratorTests(unittest.TestCase):
             ).read_text(encoding="utf-8")
             self.assertIn("PowerStackType.Counter", power_code)
             self.assertIn("PowerCmd.Apply<WardPower>", test_card_code)
+
+    def test_builds_console_test_guide(self) -> None:
+        card = build_test_guide(self.load("card_burning.json"))
+        self.assertTrue(any("card BURNING_STRIKE hand" == item["command"] for item in card["commands"]))
+        self.assertIn("card BURNING_STRIKE hand", render_test_guide_markdown(card))
+
+        power = build_test_guide(self.load("power_ward.json"))
+        self.assertTrue(any("power WARD_POWER 1 0" == item["command"] for item in power["commands"]))
+        self.assertTrue(
+            any("card WARD_POWER_TEST_CARD hand" == item["command"] for item in power["commands"])
+        )
 
 
 if __name__ == "__main__":

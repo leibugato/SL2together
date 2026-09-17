@@ -8,6 +8,7 @@ import zipfile
 from pathlib import Path
 
 from .render import generate_project
+from .test_guide import build_test_guide, render_test_guide_markdown
 
 
 def _run(command: list[str], cwd: Path) -> None:
@@ -49,6 +50,7 @@ def build_project(
     project = generate_project(spec, output_dir)
     mod_id = spec["mod"]["id"]
     build_dir = project / "build"
+    test_guide = build_test_guide(spec)
 
     _run(["dotnet", "build", str(project / "sl2mod.csproj"), f"-p:GameDir={game_dir}", "--nologo"], project)
     compiled_dll = project / ".godot" / "mono" / "temp" / "bin" / "Debug" / "sl2mod.dll"
@@ -79,10 +81,13 @@ def build_project(
     mod_folder.mkdir(parents=True)
     for filename in (f"{mod_id}.json", f"{mod_id}.dll", f"{mod_id}.pck"):
         shutil.copyfile(build_dir / filename, mod_folder / filename)
+    guide_path = project / "QUICK_TEST.md"
+    guide_path.write_text(render_test_guide_markdown(test_guide), encoding="utf-8")
+    shutil.copyfile(guide_path, mod_folder / "QUICK_TEST.md")
 
     mod_zip = dist / f"{mod_id}.zip"
     source_zip = dist / f"{mod_id}-source.zip"
-    _zip_directory(mod_folder, mod_zip, "mods")
+    _zip_directory(mod_folder, mod_zip, f"mods/{mod_id}")
     _zip_directory(
         project,
         source_zip,
@@ -96,6 +101,7 @@ def build_project(
         "modZip": str(mod_zip),
         "sourceZip": str(source_zip),
         "manifest": json.loads((build_dir / f"{mod_id}.json").read_text(encoding="utf-8")),
+        "testGuide": test_guide,
     }
 
 

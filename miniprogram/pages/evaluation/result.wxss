@@ -253,6 +253,84 @@
   margin-top: 22rpx;
 }
 
+.quick-test-guide {
+  margin-top: 24rpx;
+  padding: 22rpx;
+  background: #eef2ee;
+  border: 1rpx solid #cbd6cf;
+  border-radius: 12rpx;
+}
+
+.quick-test-title {
+  color: #2c3933;
+  font-size: 28rpx;
+  font-weight: 750;
+}
+
+.quick-test-copy {
+  margin-top: 10rpx;
+  color: #666d68;
+  font-size: 23rpx;
+  line-height: 1.55;
+}
+
+.quick-test-command-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 18rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid #d6ded8;
+}
+
+.quick-test-command-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.quick-test-command-label {
+  color: #333b37;
+  font-size: 24rpx;
+  font-weight: 650;
+}
+
+.quick-test-command {
+  display: block;
+  margin-top: 8rpx;
+  color: #215f58;
+  font-family: Consolas, monospace;
+  font-size: 25rpx;
+  word-break: break-all;
+}
+
+.quick-test-description {
+  margin-top: 7rpx;
+  color: #747a75;
+  font-size: 21rpx;
+  line-height: 1.5;
+}
+
+.quick-test-copy-button {
+  flex: none;
+  width: 104rpx;
+  min-height: 58rpx;
+  margin: 0;
+  padding: 0;
+  background: #fffdf8;
+  border: 1rpx solid #bdc9c2;
+  border-radius: 10rpx;
+  color: #27645d;
+  font-size: 22rpx;
+  line-height: 58rpx;
+}
+
+.quick-test-note {
+  margin-top: 16rpx;
+  color: #7a6250;
+  font-size: 22rpx;
+  line-height: 1.55;
+}
+
 .mod-failed {
   padding: 20rpx;
   background: #fff1ec;

@@ -117,6 +117,33 @@
           <view class="mod-result-meta">
             MOD {{modJob.modZipSize}} bytes · 源码 {{modJob.sourceZipSize}} bytes
           </view>
+          <view wx:if="{{modJob.testGuide}}" class="quick-test-guide">
+            <view class="quick-test-title">{{modJob.testGuide.title}}</view>
+            <view class="quick-test-copy">
+              进入游戏后按 {{modJob.testGuide.consoleKey}} 打开控制台，执行：
+            </view>
+            <view
+              wx:for="{{modJob.testGuide.commands}}"
+              wx:key="command"
+              class="quick-test-command-row"
+            >
+              <view class="quick-test-command-copy">
+                <view class="quick-test-command-label">{{item.label}}</view>
+                <text class="quick-test-command">{{item.command}}</text>
+                <view class="quick-test-description">{{item.description}}</view>
+              </view>
+              <button
+                class="quick-test-copy-button"
+                data-command="{{item.command}}"
+                bindtap="copyTestCommand"
+              >复制</button>
+            </view>
+            <view
+              wx:for="{{modJob.testGuide.notes}}"
+              wx:key="*this"
+              class="quick-test-note"
+            >{{item}}</view>
+          </view>
           <view class="button-row mod-action-row">
             <button class="secondary-button" bindtap="copyModDownload">复制 MOD 链接</button>
             <button class="secondary-button" bindtap="copySourceDownload">复制源码链接</button>
