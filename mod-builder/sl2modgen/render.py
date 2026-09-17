@@ -21,7 +21,13 @@ def _card_dynamic_vars(card: dict) -> list[str]:
     values: list[str] = []
     for effect in card["effects"]:
         effect_type = effect["type"]
-        if effect_type == "SEARCH_CARD":
+        if effect_type in {
+            "SEARCH_CARD",
+            "DISCARD_CARDS",
+            "EXHAUST_CARDS",
+            "PUT_BACK_CARDS",
+            "DISCARD_AND_DRAW",
+        }:
             continue
         amount = effect["amount"]
         if effect_type == "DAMAGE":
@@ -37,6 +43,15 @@ def _card_dynamic_vars(card: dict) -> list[str]:
         elif effect_type == "APPLY_POWER":
             values.append(f'new PowerVar<{effect["power"]}>({effect["amount"]}m)')
     return values
+
+
+def _card_filter_expression(filter_name: str) -> str:
+    return {
+        "ANY": "(CardModel _) => true",
+        "ATTACK": "(CardModel card) => card.Type == CardType.Attack",
+        "SKILL": "(CardModel card) => card.Type == CardType.Skill",
+        "POWER": "(CardModel card) => card.Type == CardType.Power",
+    }[filter_name]
 
 
 def _card_effect_lines(effects: list[dict]) -> list[str]:
@@ -87,22 +102,17 @@ def _card_effect_lines(effects: list[dict]) -> list[str]:
                 "DISCARD": "PileType.Discard",
                 "EXHAUST": "PileType.Exhaust",
             }[effect["source"]]
-            filter_expression = {
-                "ANY": "(CardModel _) => true",
-                "ATTACK": "(CardModel card) => card.Type == CardType.Attack",
-                "SKILL": "(CardModel card) => card.Type == CardType.Skill",
-                "POWER": "(CardModel card) => card.Type == CardType.Power",
-            }[effect.get("filter", "ANY")]
+            filter_expression = _card_filter_expression(effect.get("filter", "ANY"))
             destination = effect.get("destination", "HAND")
             lines.extend(
                 [
-                    "        IEnumerable<CardModel> selectedCards = await CardSelectCmd.FromCombatPile(",
+                    "        IEnumerable<CardModel> searchedCards = await CardSelectCmd.FromCombatPile(",
                     "            choiceContext,",
                     f"            {source_pile}.GetPile(base.Owner),",
                     "            base.Owner,",
                     f"            new CardSelectorPrefs(base.SelectionScreenPrompt, {effect.get('count', 1)}),",
                     f"            {filter_expression});",
-                    "        foreach (CardModel selectedCard in selectedCards)",
+                    "        foreach (CardModel selectedCard in searchedCards)",
                     "        {",
                     "            await CardPileCmd.Add(selectedCard, "
                     + (
@@ -111,6 +121,78 @@ def _card_effect_lines(effects: list[dict]) -> list[str]:
                         else "PileType.Hand);"
                     ),
                     "        }",
+                ]
+            )
+        elif effect_type == "DISCARD_CARDS":
+            filter_expression = _card_filter_expression(effect.get("filter", "ANY"))
+            lines.extend(
+                [
+                    "        IEnumerable<CardModel> discardedCards = await CardSelectCmd.FromHandForDiscard(",
+                    "            choiceContext,",
+                    "            base.Owner,",
+                    f"            new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, {effect.get('count', 1)}),",
+                    f"            {filter_expression},",
+                    "            this);",
+                    "        await CardCmd.Discard(choiceContext, discardedCards);",
+                ]
+            )
+        elif effect_type == "EXHAUST_CARDS":
+            filter_expression = _card_filter_expression(effect.get("filter", "ANY"))
+            source = effect.get("source", "HAND")
+            if source == "DRAW":
+                lines.extend(
+                    [
+                        "        IEnumerable<CardModel> exhaustedCards = await CardSelectCmd.FromCombatPile(",
+                        "            choiceContext,",
+                        "            PileType.Draw.GetPile(base.Owner),",
+                        "            base.Owner,",
+                        f"            new CardSelectorPrefs(CardSelectorPrefs.ExhaustSelectionPrompt, {effect.get('count', 1)}),",
+                        f"            {filter_expression});",
+                    ]
+                )
+            else:
+                lines.extend(
+                    [
+                        "        IEnumerable<CardModel> exhaustedCards = await CardSelectCmd.FromHand(",
+                        "            choiceContext,",
+                        "            base.Owner,",
+                        f"            new CardSelectorPrefs(CardSelectorPrefs.ExhaustSelectionPrompt, {effect.get('count', 1)}),",
+                        f"            {filter_expression},",
+                        "            this);",
+                    ]
+                )
+            lines.extend(
+                [
+                    "        foreach (CardModel selectedCard in exhaustedCards)",
+                    "        {",
+                    "            await CardCmd.Exhaust(choiceContext, selectedCard);",
+                    "        }",
+                ]
+            )
+        elif effect_type == "PUT_BACK_CARDS":
+            filter_expression = _card_filter_expression(effect.get("filter", "ANY"))
+            lines.extend(
+                [
+                    "        IEnumerable<CardModel> putBackCards = await CardSelectCmd.FromHand(",
+                    "            choiceContext,",
+                    "            base.Owner,",
+                    f"            new CardSelectorPrefs(base.SelectionScreenPrompt, {effect.get('count', 1)}),",
+                    f"            {filter_expression},",
+                    "            this);",
+                    "        await CardPileCmd.Add(putBackCards, PileType.Draw, CardPilePosition.Top);",
+                ]
+            )
+        elif effect_type == "DISCARD_AND_DRAW":
+            filter_expression = _card_filter_expression(effect.get("filter", "ANY"))
+            lines.extend(
+                [
+                    "        IEnumerable<CardModel> discardDrawCards = await CardSelectCmd.FromHandForDiscard(",
+                    "            choiceContext,",
+                    "            base.Owner,",
+                    f"            new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, {effect.get('discardCount', 1)}),",
+                    f"            {filter_expression},",
+                    "            this);",
+                    f"        await CardCmd.DiscardAndDraw(choiceContext, discardDrawCards, {effect.get('drawCount', 1)});",
                 ]
             )
     return lines
@@ -596,8 +678,11 @@ def generate_project(spec: dict, output_dir: Path) -> Path:
             f"{content['id']}.title": content["name"],
             f"{content['id']}.description": content["description"],
         }
-        if any(effect["type"] == "SEARCH_CARD" for effect in card["effects"]):
-            localizations["cards"][f"{content['id']}.selectionScreenPrompt"] = "选择要检索的卡牌。"
+        if any(
+            effect["type"] in {"SEARCH_CARD", "PUT_BACK_CARDS"}
+            for effect in card["effects"]
+        ):
+            localizations["cards"][f"{content['id']}.selectionScreenPrompt"] = "选择要处理的卡牌。"
     elif kind == "RELIC":
         code, pools, class_name = render_relic(namespace, content)
         _write(project / "src" / "Core" / "Models" / "Cards" / f"{class_name}.cs", code)

@@ -190,6 +190,16 @@ const KEYWORD_RULES = [
     reason: '卡牌检索需要处理来源牌堆、筛选条件、无匹配结果和检索后的去向。',
   },
   {
+    pattern: /弃掉|丢弃|弃置/,
+    dimensions: { logicComplexity: 2, compatibility: 1 },
+    reason: '弃牌需要处理手牌选择、弃牌触发顺序和弃牌后抽牌的结算时机。',
+  },
+  {
+    pattern: /放回.*抽牌堆顶|置于抽牌堆顶|放到抽牌堆顶/,
+    dimensions: { logicComplexity: 2 },
+    reason: '放回抽牌堆顶需要处理手牌选择、牌堆顺序和动画表现。',
+  },
+  {
     pattern: /新资源|专属能量|资源条|独特机制/,
     dimensions: { integrationScope: 6, visualAssets: 4, compatibility: 3 },
     reason: '新增角色资源通常涉及 UI、存档、数值和多个池系统。',

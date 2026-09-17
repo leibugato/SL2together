@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "mod": {
+    "id": "sl2t_pile_actions",
+    "name": "牌堆操作演示",
+    "author": "SL2Together",
+    "description": "验证弃牌后抽牌、选择消耗和放回抽牌堆顶。",
+    "version": "1.0.0"
+  },
+  "content": {
+    "kind": "CARD",
+    "id": "PILE_TACTICS",
+    "name": "牌堆整理",
+    "description": "弃掉一张牌，然后抽一张牌。消耗手牌中的一张牌。将一张手牌放到抽牌堆顶。",
+    "card": {
+      "cost": 1,
+      "type": "Skill",
+      "target": "Self",
+      "rarity": "Uncommon",
+      "pool": "ColorlessCardPool",
+      "keywords": [],
+      "effects": [
+        {
+          "type": "DISCARD_AND_DRAW",
+          "discardCount": 1,
+          "drawCount": 1,
+          "filter": "ANY"
+        },
+        {
+          "type": "EXHAUST_CARDS",
+          "source": "HAND",
+          "count": 1,
+          "filter": "ANY"
+        },
+        {
+          "type": "PUT_BACK_CARDS",
+          "count": 1,
+          "filter": "ANY"
+        }
+      ]
+    }
+  }
+}

@@ -17,6 +17,9 @@
         <text>升级改变伤害、格挡、抽牌或能量数值</text>
         <text>被消耗后，在自动出牌阶段从消耗堆自动打出</text>
         <text>从抽牌堆、弃牌堆或消耗牌堆检索 1 至 3 张卡，筛选任意、攻击、技能或能力牌，并加入手牌或抽牌堆顶</text>
+        <text>选择弃掉手牌，或弃掉后再抽牌</text>
+        <text>选择消耗手牌或抽牌堆中的卡牌</text>
+        <text>选择手牌放回抽牌堆顶</text>
       </view>
       <button class="secondary-button support-action" bindtap="createCard">创建设计卡牌</button>
     </view>

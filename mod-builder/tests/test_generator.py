@@ -19,7 +19,13 @@ class GeneratorTests(unittest.TestCase):
         return json.loads((ROOT / "examples" / name).read_text(encoding="utf-8"))
 
     def test_examples_are_valid(self) -> None:
-        for name in ("card_burning.json", "card_search.json", "relic_block.json", "power_ward.json"):
+        for name in (
+            "card_burning.json",
+            "card_search.json",
+            "card_pile_actions.json",
+            "relic_block.json",
+            "power_ward.json",
+        ):
             result = analyze_support(self.load(name))
             self.assertTrue(result["supported"], result["reason"])
 
@@ -107,6 +113,17 @@ class GeneratorTests(unittest.TestCase):
                 )
             )
             self.assertIn("RECOVER_STRIKE.selectionScreenPrompt", localization)
+
+    def test_generates_pile_action_card(self) -> None:
+        spec = self.load("card_pile_actions.json")
+        with tempfile.TemporaryDirectory() as directory:
+            project = generate_project(spec, Path(directory) / "mod")
+            code = (project / "src" / "Core" / "Models" / "Cards" / "PileTactics.cs").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn("CardCmd.DiscardAndDraw", code)
+            self.assertIn("CardCmd.Exhaust", code)
+            self.assertIn("CardPileCmd.Add(putBackCards, PileType.Draw", code)
 
 
 if __name__ == "__main__":

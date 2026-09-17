@@ -39,7 +39,7 @@ const KEYWORD_MAP = [
   [/永恒/, 'ETERNAL'],
 ];
 
-const MOD_SPEC_VERSION = 'modspec-v2';
+const MOD_SPEC_VERSION = 'modspec-v3';
 
 function textOf(submission) {
   return `${submission.name || ''}\n${submission.designText || ''}`;
@@ -125,6 +125,7 @@ function buildCardSpec(submission) {
   const text = textOf(submission);
   const extra = submission.extra || {};
   const effects = [];
+  const discardAndDraw = /弃掉|丢弃|弃置/.test(text) && /抽/.test(text);
   const damage = /造成|攻击/.test(text)
     ? {
         type: 'DAMAGE',
@@ -140,7 +141,7 @@ function buildCardSpec(submission) {
       amount: extractNumber(text, /获得\s*(\d+)\s*点?格挡/, 5, 99),
     });
   }
-  if (/抽(?:牌|\s*\d+\s*张)/.test(text)) {
+  if (/抽(?:牌|\s*\d+\s*张)/.test(text) && !discardAndDraw) {
     effects.push({
       type: 'DRAW',
       amount: extractNumber(text, /抽\s*(\d+)\s*张/, 1, 10),
@@ -156,6 +157,62 @@ function buildCardSpec(submission) {
     effects.push({
       type: 'HEAL',
       amount: extractNumber(text, /(?:回复|治疗)\s*(\d+)\s*点?生命/, 5, 99),
+    });
+  }
+
+  if (discardAndDraw) {
+    effects.push({
+      type: 'DISCARD_AND_DRAW',
+      discardCount: extractNumber(text, /(?:弃掉|丢弃|弃置)\s*(\d+)\s*张/, 1, 5),
+      drawCount: extractNumber(text, /抽\s*(\d+)\s*张/, 1, 5),
+      filter: /攻击牌/.test(text)
+        ? 'ATTACK'
+        : /技能牌/.test(text)
+          ? 'SKILL'
+          : /能力牌/.test(text)
+            ? 'POWER'
+            : 'ANY',
+    });
+  } else if (/弃掉|丢弃|弃置/.test(text)) {
+    effects.push({
+      type: 'DISCARD_CARDS',
+      count: extractNumber(text, /(?:弃掉|丢弃|弃置)\s*(\d+)\s*张/, 1, 5),
+      filter: /攻击牌/.test(text)
+        ? 'ATTACK'
+        : /技能牌/.test(text)
+          ? 'SKILL'
+          : /能力牌/.test(text)
+            ? 'POWER'
+            : 'ANY',
+    });
+  }
+
+  if (/选择.*消耗|消耗一张|消耗\s*\d+\s*张/.test(text)) {
+    effects.push({
+      type: 'EXHAUST_CARDS',
+      source: /抽牌堆.*消耗|消耗.*抽牌堆/.test(text) ? 'DRAW' : 'HAND',
+      count: extractNumber(text, /消耗\s*(\d+)\s*张/, 1, 5),
+      filter: /攻击牌/.test(text)
+        ? 'ATTACK'
+        : /技能牌/.test(text)
+          ? 'SKILL'
+          : /能力牌/.test(text)
+            ? 'POWER'
+            : 'ANY',
+    });
+  }
+
+  if (/放回.*抽牌堆顶|置于抽牌堆顶|放到抽牌堆顶|回到抽牌堆顶/.test(text)) {
+    effects.push({
+      type: 'PUT_BACK_CARDS',
+      count: extractNumber(text, /(\d+)\s*张/, 1, 3),
+      filter: /攻击牌/.test(text)
+        ? 'ATTACK'
+        : /技能牌/.test(text)
+          ? 'SKILL'
+          : /能力牌/.test(text)
+            ? 'POWER'
+            : 'ANY',
     });
   }
 

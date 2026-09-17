@@ -167,7 +167,7 @@ const generatedCard = buildRuleModSpec(
   }),
 );
 assert.equal(generatedCard.supported, true);
-assert.equal(generatedCard.version, 'modspec-v2');
+assert.equal(generatedCard.version, 'modspec-v3');
 assert.match(generatedCard.spec.mod.id, /^sl2t_a1b2c3d4_/);
 assert.ok(generatedCard.spec.mod.name.includes('A1B2C3D4'));
 assert.ok(generatedCard.spec.mod.name.includes('飞刀连击'));
@@ -177,6 +177,32 @@ assert.ok(generatedCard.spec.content.card.keywords.includes('EXHAUST'));
 assert.ok(
   generatedCard.spec.content.card.behaviors.some(
     (behavior) => behavior.type === 'AUTO_PLAY_FROM_EXHAUST',
+  ),
+);
+
+const generatedDiscard = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_discard',
+    ownerTag: 'A1B2C3D4',
+    type: 'CARD',
+    designText: '弃掉1张手牌，然后抽1张牌。选择消耗1张手牌。将1张手牌放到抽牌堆顶。',
+    extra: { cost: 1, cardType: '技能', rarity: '普通' },
+  }),
+);
+assert.equal(generatedDiscard.supported, true);
+assert.ok(
+  generatedDiscard.spec.content.card.effects.some(
+    (effect) => effect.type === 'DISCARD_AND_DRAW',
+  ),
+);
+assert.ok(
+  generatedDiscard.spec.content.card.effects.some(
+    (effect) => effect.type === 'EXHAUST_CARDS',
+  ),
+);
+assert.ok(
+  generatedDiscard.spec.content.card.effects.some(
+    (effect) => effect.type === 'PUT_BACK_CARDS',
   ),
 );
 

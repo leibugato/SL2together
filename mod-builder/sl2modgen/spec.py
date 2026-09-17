@@ -67,6 +67,10 @@ EFFECTS = {
     "HEAL",
     "APPLY_POWER",
     "SEARCH_CARD",
+    "DISCARD_CARDS",
+    "EXHAUST_CARDS",
+    "PUT_BACK_CARDS",
+    "DISCARD_AND_DRAW",
 }
 
 NON_CARD_EFFECTS = {
@@ -156,6 +160,30 @@ def _validate_effect(effect: dict, kind: str, index: int) -> None:
             "SEARCH_CARD 过滤条件只能是 ANY、ATTACK、SKILL 或 POWER。",
         )
         _positive_int(effect.get("count", 1), f"effects[{index}].count", 3)
+        return
+
+    if effect_type in {"DISCARD_CARDS", "EXHAUST_CARDS", "PUT_BACK_CARDS"}:
+        _require(kind == "CARD", f"{effect_type} 第一版只允许卡牌使用。")
+        _require(
+            effect.get("filter", "ANY") in {"ANY", "ATTACK", "SKILL", "POWER"},
+            f"{effect_type} 过滤条件只能是 ANY、ATTACK、SKILL 或 POWER。",
+        )
+        _positive_int(effect.get("count", 1), f"effects[{index}].count", 5)
+        if effect_type == "EXHAUST_CARDS":
+            _require(
+                effect.get("source", "HAND") in {"HAND", "DRAW"},
+                "EXHAUST_CARDS 来源只能是 HAND 或 DRAW。",
+            )
+        return
+
+    if effect_type == "DISCARD_AND_DRAW":
+        _require(kind == "CARD", "DISCARD_AND_DRAW 第一版只允许卡牌使用。")
+        _require(
+            effect.get("filter", "ANY") in {"ANY", "ATTACK", "SKILL", "POWER"},
+            "DISCARD_AND_DRAW 过滤条件只能是 ANY、ATTACK、SKILL 或 POWER。",
+        )
+        _positive_int(effect.get("discardCount", 1), f"effects[{index}].discardCount", 5)
+        _positive_int(effect.get("drawCount", 1), f"effects[{index}].drawCount", 5)
         return
 
     if effect_type == "DAMAGE":
