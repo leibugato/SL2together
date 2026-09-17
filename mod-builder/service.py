@@ -17,6 +17,7 @@ from sl2modgen.spec import SpecError
 
 
 app = FastAPI(title="SL2Together Mod Builder", version="0.1.0")
+REQUIRED_REFERENCE_FILES = ("sts2.dll", "GodotSharp.dll", "0Harmony.dll")
 
 
 class BuildRequest(BaseModel):
@@ -45,14 +46,19 @@ def _download_reference_kit(target: Path) -> None:
 
 def ensure_reference_kit() -> Path:
     target = _reference_dir()
-    required = ("sts2.dll", "GodotSharp.dll", "0Harmony.dll")
-    if all((target / name).exists() for name in required):
+    if all((target / name).exists() for name in REQUIRED_REFERENCE_FILES):
         return target
     _download_reference_kit(target)
-    missing = [name for name in required if not (target / name).exists()]
+    missing = [name for name in REQUIRED_REFERENCE_FILES if not (target / name).exists()]
     if missing:
         raise RuntimeError(f"引用目录缺少文件：{', '.join(missing)}")
     return target
+
+
+def _reference_status() -> tuple[bool, bool]:
+    target = _reference_dir()
+    ready = all((target / name).exists() for name in REQUIRED_REFERENCE_FILES)
+    return bool(os.environ.get("STS2_REFERENCE_URL", "").strip()), ready
 
 
 def _authorize(authorization: str | None, mod_build_token: str | None) -> None:
@@ -77,10 +83,13 @@ def _read_artifact(path: Path) -> str:
 @app.get("/health")
 def health() -> dict:
     godot_bin = os.environ.get("GODOT_BIN", "/usr/local/bin/godot")
+    reference_url_configured, reference_kit_ready = _reference_status()
     return {
         "ok": True,
         "godot": godot_bin,
         "dotnet": shutil.which("dotnet"),
+        "referenceUrlConfigured": reference_url_configured,
+        "referenceKitReady": reference_kit_ready,
     }
 
 
@@ -91,7 +100,15 @@ def build(
     x_mod_build_token: str | None = Header(default=None, alias="X-Mod-Build-Token"),
 ) -> dict:
     _authorize(authorization, x_mod_build_token)
-    reference_dir = ensure_reference_kit()
+    try:
+        reference_dir = ensure_reference_kit()
+    except Exception as error:
+        message = str(error).replace(os.environ.get("STS2_REFERENCE_URL", ""), "<STS2_REFERENCE_URL>")
+        print(f"reference_error jobId={request.jobId} type={type(error).__name__} message={message}")
+        raise HTTPException(
+            status_code=502,
+            detail="引用包准备失败，请检查 STS2_REFERENCE_URL 是否为可直接下载的 ZIP。",
+        ) from error
     godot_bin = Path(os.environ.get("GODOT_BIN", "/usr/local/bin/godot"))
     if not godot_bin.exists():
         raise HTTPException(status_code=503, detail=f"Godot 不存在：{godot_bin}")
