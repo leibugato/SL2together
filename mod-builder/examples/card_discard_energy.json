@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "mod": {
+    "id": "sl2t_discard_energy",
+    "name": "弃牌获得费用演示",
+    "author": "SL2Together",
+    "description": "验证选择弃牌后获得费用。",
+    "version": "1.0.0"
+  },
+  "content": {
+    "kind": "CARD",
+    "id": "DISCARD_FOR_ENERGY",
+    "name": "取舍",
+    "description": "选择一张手牌丢弃，获得2点费用。",
+    "card": {
+      "cost": 0,
+      "type": "Skill",
+      "target": "Self",
+      "rarity": "Common",
+      "pool": "ColorlessCardPool",
+      "keywords": [],
+      "effects": [
+        {
+          "type": "DISCARD_CARDS",
+          "count": 1,
+          "filter": "ANY"
+        },
+        {
+          "type": "GAIN_ENERGY",
+          "amount": 2
+        }
+      ]
+    }
+  }
+}

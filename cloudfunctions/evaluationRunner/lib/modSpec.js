@@ -39,7 +39,20 @@ const KEYWORD_MAP = [
   [/永恒/, 'ETERNAL'],
 ];
 
-const MOD_SPEC_VERSION = 'modspec-v3';
+const MOD_SPEC_VERSION = 'modspec-v4';
+
+const EFFECT_ORDER_PATTERNS = {
+  DAMAGE: /造成|攻击/,
+  GAIN_BLOCK: /格挡/,
+  DRAW: /抽\s*(?:[0-9一二三四五六七八九十]+)?\s*张|抽牌/,
+  GAIN_ENERGY: /能量|费用/,
+  HEAL: /回复.*生命|治疗/,
+  DISCARD_CARDS: /弃掉|丢弃|弃置/,
+  DISCARD_AND_DRAW: /弃掉|丢弃|弃置/,
+  EXHAUST_CARDS: /选择.*消耗|消耗一张|消耗\s*\d+\s*张/,
+  PUT_BACK_CARDS: /放回.*抽牌堆顶|置于抽牌堆顶|放到抽牌堆顶|回到抽牌堆顶/,
+  SEARCH_CARD: /检索|搜寻|搜索|查找/,
+};
 
 function textOf(submission) {
   return `${submission.name || ''}\n${submission.designText || ''}`;
@@ -147,10 +160,10 @@ function buildCardSpec(submission) {
       amount: extractNumber(text, /抽\s*(\d+)\s*张/, 1, 10),
     });
   }
-  if (/获得.*能量/.test(text)) {
+  if (/获得.*(?:能量|费用)/.test(text)) {
     effects.push({
       type: 'GAIN_ENERGY',
-      amount: extractNumber(text, /获得\s*(\d+)\s*点?能量/, 1, 10),
+      amount: extractNumber(text, /获得\s*(\d+)\s*点?(?:能量|费用)/, 1, 10),
     });
   }
   if (/回复.*生命|治疗/.test(text)) {
@@ -248,6 +261,12 @@ function buildCardSpec(submission) {
     });
   }
 
+  effects.sort((left, right) => {
+    const leftMatch = text.match(EFFECT_ORDER_PATTERNS[left.type] || /$^/);
+    const rightMatch = text.match(EFFECT_ORDER_PATTERNS[right.type] || /$^/);
+    return (leftMatch?.index ?? 9999) - (rightMatch?.index ?? 9999);
+  });
+
   const behaviors = /(?:被|进入).{0,6}消耗(?:牌堆|堆)?(?:后|的?时).{0,12}(?:自动)?打出|消耗堆.{0,12}自动打出/.test(text)
     ? [{ type: 'AUTO_PLAY_FROM_EXHAUST' }]
     : [];
@@ -314,10 +333,10 @@ function buildRelicSpec(submission) {
       amount: extractNumber(text, /抽\s*(\d+)\s*张/, 1, 10),
     });
   }
-  if (/能量/.test(text)) {
+  if (/能量|费用/.test(text)) {
     effects.push({
       type: 'GAIN_ENERGY',
-      amount: extractNumber(text, /(\d+)\s*点?能量/, 1, 10),
+      amount: extractNumber(text, /(\d+)\s*点?(?:能量|费用)/, 1, 10),
     });
   }
   if (/回复.*生命|治疗/.test(text)) {
@@ -374,7 +393,7 @@ function buildPowerSpec(submission) {
   const effects = [];
   if (/格挡/.test(text)) effects.push({ type: 'GAIN_BLOCK' });
   if (/抽(?:牌|\s*\d+\s*张)/.test(text)) effects.push({ type: 'DRAW' });
-  if (/能量/.test(text)) effects.push({ type: 'GAIN_ENERGY' });
+  if (/能量|费用/.test(text)) effects.push({ type: 'GAIN_ENERGY' });
   if (/回复.*生命|治疗/.test(text)) effects.push({ type: 'HEAL' });
   const power = detectPower(text);
   if (power) {

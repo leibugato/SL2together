@@ -167,7 +167,7 @@ const generatedCard = buildRuleModSpec(
   }),
 );
 assert.equal(generatedCard.supported, true);
-assert.equal(generatedCard.version, 'modspec-v3');
+assert.equal(generatedCard.version, 'modspec-v4');
 assert.match(generatedCard.spec.mod.id, /^sl2t_a1b2c3d4_/);
 assert.ok(generatedCard.spec.mod.name.includes('A1B2C3D4'));
 assert.ok(generatedCard.spec.mod.name.includes('飞刀连击'));
@@ -203,6 +203,29 @@ assert.ok(
 assert.ok(
   generatedDiscard.spec.content.card.effects.some(
     (effect) => effect.type === 'PUT_BACK_CARDS',
+  ),
+);
+
+const generatedDiscardEnergy = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_discard_energy',
+    ownerTag: 'A1B2C3D4',
+    type: 'CARD',
+    designText: '选择一张手牌丢弃，获得2点费用。',
+    extra: { cost: 1, cardType: '技能', rarity: '普通' },
+  }),
+);
+assert.equal(generatedDiscardEnergy.supported, true);
+assert.equal(generatedDiscardEnergy.spec.content.card.effects[0].type, 'DISCARD_CARDS');
+assert.equal(generatedDiscardEnergy.spec.content.card.effects[1].type, 'GAIN_ENERGY');
+assert.ok(
+  generatedDiscardEnergy.spec.content.card.effects.some(
+    (effect) => effect.type === 'DISCARD_CARDS',
+  ),
+);
+assert.ok(
+  generatedDiscardEnergy.spec.content.card.effects.some(
+    (effect) => effect.type === 'GAIN_ENERGY' && effect.amount === 2,
   ),
 );
 

@@ -11,7 +11,7 @@
     <view class="support-section surface">
       <view class="support-title">卡牌</view>
       <view class="support-list">
-        <text>单体或全体伤害、格挡、抽牌、获得能量、治疗</text>
+        <text>单体或全体伤害、格挡、抽牌、获得能量或费用、治疗</text>
         <text>施加已知的虚弱、易伤、脆弱、力量、敏捷、中毒、荆棘或活力</text>
         <text>消耗、虚无、固有、不可打出、保留、奇巧、永恒</text>
         <text>升级改变伤害、格挡、抽牌或能量数值</text>

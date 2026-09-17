@@ -23,6 +23,7 @@ class GeneratorTests(unittest.TestCase):
             "card_burning.json",
             "card_search.json",
             "card_pile_actions.json",
+            "card_discard_energy.json",
             "relic_block.json",
             "power_ward.json",
         ):
