@@ -230,7 +230,7 @@ async function generate(db, cloud, openid, event) {
         referenceUrl,
         spec: modGeneration.spec,
       },
-      Math.max(10000, Number(process.env.MOD_BUILDER_TIMEOUT_MS || 55000)),
+      Math.max(10000, Number(process.env.MOD_BUILDER_TIMEOUT_MS || 45000)),
     );
     assert(built.ok, 'MOD_BUILD_FAILED', 'MOD 构建失败。');
     assert(built.modZipBase64 && built.sourceZipBase64, 'MOD_BUILD_FAILED', '构建产物不完整。');

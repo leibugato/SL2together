@@ -135,6 +135,8 @@ export const ENV_ID = 'sts2-mod-dev-1g2h3i4j5k6l';
 
 `api`：
 
+先将 `api` 云函数的“执行超时”设置为 `60` 秒。生成 MOD 需要调用云托管完成编译，默认 20 秒不足。
+
 ```text
 APP_ENV=dev
 AI_PROVIDER=openai-compatible
@@ -145,7 +147,7 @@ MAX_DAILY_EVALUATIONS=20
 MOD_BUILDER_URL=https://你的云托管访问地址/sl2modc/build
 MOD_BUILD_TOKEN=与云托管容器完全一致的随机长字符串
 STS2_REFERENCE_FILE_ID=cloud://你的环境ID/mod-build/reference-kit/reference-kit.zip
-MOD_BUILDER_TIMEOUT_MS=55000
+MOD_BUILDER_TIMEOUT_MS=45000
 ```
 
 `api` 不保存 API Key，但 `AI_PROVIDER`、`AI_MODEL`、`CATALOG_VERSION` 和 `PROMPT_VERSION` 必须与 `evaluationRunner` 保持一致，否则会创建旧 Provider 的任务或错误复用缓存。
