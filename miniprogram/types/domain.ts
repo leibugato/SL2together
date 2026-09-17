@@ -157,12 +157,39 @@ export interface Evaluation extends EvaluationSummary {
     confidence: number;
   }>;
   dimensions: Record<string, number>;
+  modGeneration?: {
+    supported: boolean;
+    reason: string;
+    spec: Record<string, unknown> | null;
+  } | null;
   model: {
     provider: string;
     model: string;
     promptVersion: string;
     catalogVersion: string;
   };
+}
+
+export interface ModGenerationJob {
+  _id: string;
+  submissionId: string;
+  evaluationId: string;
+  status: 'QUEUED' | 'RUNNING' | 'SUCCEEDED' | 'FAILED';
+  contentVersion: number;
+  contentHash: string;
+  manifest: {
+    id: string;
+    name: string;
+    version: string;
+  } | null;
+  modFileId: string;
+  sourceFileId: string;
+  modZipSize: number;
+  sourceZipSize: number;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface EvaluationJob {

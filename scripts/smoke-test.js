@@ -11,6 +11,7 @@ const {
   getShareExpiry,
   normalizeShareCode,
 } = require('../cloudfunctions/api/lib/share');
+const { buildRuleModSpec } = require('../cloudfunctions/evaluationRunner/lib/modSpec');
 
 function baseSubmission(overrides = {}) {
   return {
@@ -101,6 +102,7 @@ assert.equal(sanitized.technicalAnchors.length, 1);
 assert.equal(sanitized.difficulty.label, '困难');
 assert.ok(sanitized.implementationBrief.length > 0);
 assert.deepEqual(sanitized.missingInformation, ['升级后的具体数值']);
+assert.equal(sanitized.modGeneration.supported, true);
 
 const concise = sanitizeModelResult(
   {
@@ -154,5 +156,44 @@ assert.equal(normalizeShareCode(shareCode.toLowerCase()), shareCode);
 assert.equal(normalizeShareCode(shareCode.replace(/-/g, ' ')), shareCode);
 assert.ok(getShareExpiry().getTime() > Date.now());
 assert.throws(() => normalizeShareCode('SL2-INVALID'));
+
+const generatedCard = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_card',
+    type: 'CARD',
+    designText: '造成6点伤害。消耗。被消耗的时候，在自动出牌阶段自动打出。',
+    extra: { cost: 1, cardType: '攻击', rarity: '普通' },
+  }),
+);
+assert.equal(generatedCard.supported, true);
+assert.equal(generatedCard.spec.content.card.effects[0].amount, 6);
+assert.ok(generatedCard.spec.content.card.keywords.includes('EXHAUST'));
+assert.ok(
+  generatedCard.spec.content.card.behaviors.some(
+    (behavior) => behavior.type === 'AUTO_PLAY_FROM_EXHAUST',
+  ),
+);
+
+const generatedRelic = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_relic',
+    type: 'RELIC',
+    name: '第一道防线',
+    designText: '战斗开始时获得5点格挡。',
+    extra: { rarity: '普通', trigger: '战斗开始' },
+  }),
+);
+assert.equal(generatedRelic.supported, true);
+assert.equal(generatedRelic.spec.content.relic.triggers[0].type, 'BEFORE_COMBAT_START');
+
+const unsupportedMod = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_event',
+    type: 'EVENT',
+    designText: '进入事件后展示三个选项。',
+    extra: {},
+  }),
+);
+assert.equal(unsupportedMod.supported, false);
 
 console.log('smoke-test: all checks passed');

@@ -1,7 +1,13 @@
 import { isCloudConfigured } from '../../config/env';
 import { getEvaluation } from '../../services/evaluation';
 import { submitIdea } from '../../services/idea';
-import type { Evaluation, Submission } from '../../types/domain';
+import {
+  generateMod,
+  getCloudFileTempUrl,
+  getLatestModJob,
+  shareCloudFile,
+} from '../../services/mod';
+import type { Evaluation, ModGenerationJob, Submission } from '../../types/domain';
 import { dimensionRows, formatDate } from '../../utils/format';
 
 Page({
@@ -13,6 +19,9 @@ Page({
     evaluation: null as Evaluation | null,
     submission: null as Submission | null,
     submitting: false,
+    generatingMod: false,
+    sharingMod: false,
+    modJob: null as ModGenerationJob | null,
     createdLabel: '',
     dimensions: [] as Array<{
       key: string;
@@ -52,6 +61,15 @@ Page({
         createdLabel: formatDate(result.evaluation.createdAt),
         dimensions: dimensionRows(result.evaluation.dimensions),
       });
+      if (result.evaluation.modGeneration?.supported) {
+        getLatestModJob(this.data.submissionId)
+          .then((modResult) => {
+            if (modResult.job) {
+              this.setData({ modJob: modResult.job });
+            }
+          })
+          .catch(() => {});
+      }
     } catch (error) {
       this.setData({
         loading: false,
@@ -87,6 +105,61 @@ Page({
       });
     } finally {
       this.setData({ submitting: false });
+    }
+  },
+
+  async generateMod() {
+    if (this.data.generatingMod || this.data.modJob?.status === 'SUCCEEDED') return;
+    this.setData({ generatingMod: true });
+    try {
+      const result = await generateMod(this.data.submissionId);
+      this.setData({
+        generatingMod: false,
+        modJob: result.job,
+      });
+      wx.showToast({ title: 'MOD 已生成', icon: 'success' });
+    } catch (error) {
+      this.setData({ generatingMod: false });
+      wx.showModal({
+        title: '生成失败',
+        content: error instanceof Error ? error.message : '请稍后重试。',
+        showCancel: false,
+      });
+    }
+  },
+
+  async copyModDownload() {
+    const fileId = this.data.modJob?.modFileId;
+    if (!fileId) return;
+    try {
+      const url = await getCloudFileTempUrl(fileId);
+      wx.setClipboardData({ data: url });
+    } catch (error) {
+      wx.showToast({ title: '链接生成失败', icon: 'none' });
+    }
+  },
+
+  async copySourceDownload() {
+    const fileId = this.data.modJob?.sourceFileId;
+    if (!fileId) return;
+    try {
+      const url = await getCloudFileTempUrl(fileId);
+      wx.setClipboardData({ data: url });
+    } catch (error) {
+      wx.showToast({ title: '链接生成失败', icon: 'none' });
+    }
+  },
+
+  async shareMod() {
+    const job = this.data.modJob;
+    if (!job?.modFileId || this.data.sharingMod) return;
+    this.setData({ sharingMod: true });
+    try {
+      await shareCloudFile(job.modFileId, `${job.manifest?.id || 'mod'}.zip`);
+    } catch (error) {
+      wx.showToast({ title: '分享失败，可先复制链接', icon: 'none' });
+    } finally {
+      this.setData({ sharingMod: false });
     }
   },
 });

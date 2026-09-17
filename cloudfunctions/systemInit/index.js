@@ -11,6 +11,7 @@ const COLLECTIONS = [
   'share_codes',
   'evaluations',
   'evaluation_jobs',
+  'mod_generation_jobs',
   'catalog_versions',
   'usage_daily',
   'admins',

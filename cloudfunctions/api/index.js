@@ -10,6 +10,7 @@ const {
 } = require('./lib/core');
 const idea = require('./lib/idea');
 const evaluation = require('./lib/evaluation');
+const modBuilder = require('./lib/modBuilder');
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
@@ -84,6 +85,10 @@ async function dispatch(event, openid) {
       return evaluation.get(db, openid, event);
     case 'evaluation.retry':
       return evaluation.retry(db, openid, event);
+    case 'mod.generate':
+      return modBuilder.generate(db, cloud, openid, event);
+    case 'mod.get':
+      return modBuilder.get(db, openid, event);
     case 'system.ping':
       return {
         service: 'api',

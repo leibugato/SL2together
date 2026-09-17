@@ -214,6 +214,7 @@ function publicEvaluation(evaluation) {
     missingInformation: evaluation.missingInformation || [],
     technicalAnchors: evaluation.technicalAnchors || [],
     dimensions: evaluation.dimensions || {},
+    modGeneration: evaluation.modGeneration || null,
     model: evaluation.model || {},
     createdAt: toIso(evaluation.createdAt),
   };

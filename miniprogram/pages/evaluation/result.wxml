@@ -97,6 +97,50 @@
       </view>
     </view>
 
+    <view wx:if="{{evaluation.modGeneration}}" class="section mod-generation-section">
+      <view class="section-title">生成可安装 MOD</view>
+      <view wx:if="{{evaluation.modGeneration.supported}}" class="mod-supported">
+        <view class="mod-status">该设计在白名单范围内，可以自动生成源码和 MOD 文件。</view>
+
+        <block wx:if="{{!modJob}}">
+          <button
+            class="primary-button mod-generate-button"
+            disabled="{{generatingMod}}"
+            bindtap="generateMod"
+          >
+            {{generatingMod ? '正在生成...' : '生成 MOD'}}
+          </button>
+        </block>
+
+        <block wx:elif="{{modJob.status === 'SUCCEEDED'}}">
+          <view class="mod-result">{{modJob.manifest.name}} · {{modJob.manifest.version}}</view>
+          <view class="mod-result-meta">
+            MOD {{modJob.modZipSize}} bytes · 源码 {{modJob.sourceZipSize}} bytes
+          </view>
+          <view class="button-row mod-action-row">
+            <button class="secondary-button" bindtap="copyModDownload">复制 MOD 链接</button>
+            <button class="secondary-button" bindtap="copySourceDownload">复制源码链接</button>
+          </view>
+          <button
+            class="primary-button mod-generate-button"
+            disabled="{{sharingMod}}"
+            bindtap="shareMod"
+          >
+            {{sharingMod ? '正在分享...' : '发送 MOD ZIP 到微信'}}
+          </button>
+        </block>
+
+        <view wx:else class="mod-failed">
+          <view>{{modJob.errorMessage || '生成失败，请稍后重试。'}}</view>
+          <button class="text-button" bindtap="generateMod">重新生成</button>
+        </view>
+      </view>
+
+      <view wx:else class="mod-unsupported">
+        {{evaluation.modGeneration.reason || '当前设计暂不支持自动生成 MOD。'}}
+      </view>
+    </view>
+
     <view class="disclaimer">
       评估结果由规则和 AI 根据当前接口知识库生成，仅用于辅助判断，不代表保证可实装。最终难度会随游戏版本、资源规模和具体实现方式变化。
     </view>
@@ -113,5 +157,17 @@
     </view>
     <button class="text-button detail-link" bindtap="openDetail">查看设计详情</button>
   </block>
+
+  <view wx:if="{{generatingMod}}" class="evaluation-loading-mask">
+    <view class="evaluation-loading-card">
+      <image
+        class="evaluation-loading-image"
+        src="/images/evaluation-thinking.png"
+        mode="aspectFit"
+      ></image>
+      <view class="evaluation-loading-title">正在生成 MOD</view>
+      <view class="evaluation-loading-copy">正在生成源码、编译 DLL 并导出 PCK</view>
+    </view>
+  </view>
   </view>
 </view>

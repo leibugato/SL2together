@@ -5,6 +5,8 @@ const DIFFICULTY_LABELS = {
   EXTREME: '极难',
 };
 
+const { buildRuleModSpec } = require('./modSpec');
+
 const TYPE_LABELS = {
   CARD: '卡牌',
   RELIC: '遗物',
@@ -330,6 +332,7 @@ function analyze(submission) {
   if (textLength >= 120) {
     reasons.push('描述包含较完整的效果说明，可以据此识别主要实现路径。');
   }
+  const modGeneration = buildRuleModSpec(submission);
   return {
     difficulty: {
       level: difficulty,
@@ -350,6 +353,7 @@ function analyze(submission) {
     technicalAnchors: (TYPE_ANCHORS[type] || TYPE_ANCHORS.CARD).slice(0, 3),
     dimensions: base,
     implementationBrief: buildImplementationBrief(type),
+    modGeneration,
   };
 }
 

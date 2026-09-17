@@ -83,6 +83,7 @@ export const ENV_ID = 'sts2-mod-dev-1g2h3i4j5k6l';
 - `share_codes`
 - `evaluations`
 - `evaluation_jobs`
+- `mod_generation_jobs`
 - `catalog_versions`
 - `usage_daily`
 - `admins`
@@ -124,6 +125,7 @@ export const ENV_ID = 'sts2-mod-dev-1g2h3i4j5k6l';
 | `evaluations` | `_openid` 升序 + `submissionId` 升序 + `createdAt` 降序 |
 | `evaluation_jobs` | `_openid` 升序 + `submissionId` 升序 + `createdAt` 降序 |
 | `evaluation_jobs` | `status` 升序 + `createdAt` 升序 |
+| `mod_generation_jobs` | `_openid` 升序 + `submissionId` 升序 + `createdAt` 降序 |
 | `usage_daily` | `_openid` 升序 + `date` 升序 |
 | `catalog_versions` | `status` 升序 + `updatedAt` 降序 |
 
@@ -140,6 +142,10 @@ AI_MODEL=qwen3.8-flash
 CATALOG_VERSION=sts2-api-2026.09-r4
 PROMPT_VERSION=eval-v4
 MAX_DAILY_EVALUATIONS=20
+MOD_BUILDER_URL=https://你的云托管访问地址/sl2modc/build
+MOD_BUILD_TOKEN=与云托管容器完全一致的随机长字符串
+STS2_REFERENCE_FILE_ID=cloud://你的环境ID/mod-build/reference-kit/reference-kit.zip
+MOD_BUILDER_TIMEOUT_MS=55000
 ```
 
 `api` 不保存 API Key，但 `AI_PROVIDER`、`AI_MODEL`、`CATALOG_VERSION` 和 `PROMPT_VERSION` 必须与 `evaluationRunner` 保持一致，否则会创建旧 Provider 的任务或错误复用缓存。

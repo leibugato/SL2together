@@ -141,6 +141,11 @@ function sanitizeModelResult(raw, fallback) {
     missingInformation,
     technicalAnchors: sanitizeTechnicalAnchors(raw.technicalAnchors, fallback),
     dimensions: sanitizeDimensions(raw.dimensions, fallback),
+    modGeneration: fallback.modGeneration || {
+      supported: false,
+      reason: '当前评估结果没有可用的自动生成规格。',
+      spec: null,
+    },
   };
 }
 

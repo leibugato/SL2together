@@ -86,6 +86,7 @@
 | `missingInformation` | string[] | 缺失信息 |
 | `technicalAnchors` | object[] | 模型、命令、池和资源依据 |
 | `dimensions` | object | 六项评分维度 |
+| `modGeneration` | object | 白名单生成判断和受控 `ModSpec` |
 | `model` | object | Provider、模型、Prompt 和知识库版本 |
 | `createdAt` | date | 创建时间 |
 
@@ -109,6 +110,26 @@
 | `lockedAt` | date/null | 执行锁时间 |
 | `errorCode` | string/null | 错误码 |
 | `errorMessage` | string/null | 脱敏错误信息 |
+
+## mod_generation_jobs
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `_openid` | string | 发起生成的用户 |
+| `submissionId` | string | 设计记录 ID |
+| `evaluationId` | string | 使用的评估结果 ID |
+| `contentVersion` | number | 生成时的设计版本 |
+| `contentHash` | string | 生成时的内容哈希 |
+| `status` | string | `QUEUED`、`RUNNING`、`SUCCEEDED`、`FAILED` |
+| `manifest` | object/null | 生成的 MOD manifest |
+| `modFileId` | string | MOD ZIP 的云存储 fileID |
+| `sourceFileId` | string | 源码 ZIP 的云存储 fileID |
+| `modZipSize` | number | MOD ZIP 字节数 |
+| `sourceZipSize` | number | 源码 ZIP 字节数 |
+| `errorCode` | string/null | 错误码 |
+| `errorMessage` | string/null | 脱敏错误信息 |
+| `createdAt` | date | 创建时间 |
+| `updatedAt` | date | 更新时间 |
 
 ## usage_daily
 

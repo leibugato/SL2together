@@ -209,6 +209,58 @@
   line-height: 1.7;
 }
 
+.mod-generation-section {
+  padding: 28rpx;
+  background: rgba(255, 252, 246, 0.94);
+  border: 1rpx solid #d7d0c3;
+  border-radius: 16rpx;
+}
+
+.mod-supported,
+.mod-unsupported {
+  color: #5f655f;
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.mod-unsupported {
+  padding: 20rpx;
+  background: #f1ece3;
+  border-left: 6rpx solid #b56b38;
+}
+
+.mod-status {
+  margin-bottom: 22rpx;
+}
+
+.mod-generate-button {
+  margin-top: 18rpx;
+}
+
+.mod-result {
+  color: #2f3632;
+  font-size: 29rpx;
+  font-weight: 700;
+}
+
+.mod-result-meta {
+  margin-top: 8rpx;
+  color: #7c817c;
+  font-size: 22rpx;
+}
+
+.mod-action-row {
+  margin-top: 22rpx;
+}
+
+.mod-failed {
+  padding: 20rpx;
+  background: #fff1ec;
+  border-left: 6rpx solid #a63d2f;
+  color: #8d4136;
+  line-height: 1.6;
+}
+
 .action-row {
   margin-top: 36rpx;
 }

@@ -4,7 +4,7 @@
   "private": true,
   "description": "杀戮尖塔 2 MOD 设计收集与 AI 可行性评估微信小程序",
   "scripts": {
-    "check:cloud": "node --check cloudfunctions/api/index.js && node --check cloudfunctions/api/lib/idea.js && node --check cloudfunctions/api/lib/share.js && node --check cloudfunctions/adminApi/index.js && node --check cloudfunctions/evaluationRunner/index.js && node --check cloudfunctions/scheduledWorker/index.js && node --check cloudfunctions/systemInit/index.js",
+    "check:cloud": "node --check cloudfunctions/api/index.js && node --check cloudfunctions/api/lib/idea.js && node --check cloudfunctions/api/lib/share.js && node --check cloudfunctions/api/lib/modBuilder.js && node --check cloudfunctions/evaluationRunner/lib/modSpec.js && node --check cloudfunctions/adminApi/index.js && node --check cloudfunctions/evaluationRunner/index.js && node --check cloudfunctions/scheduledWorker/index.js && node --check cloudfunctions/systemInit/index.js",
     "check:miniprogram": "node --check miniprogram/app.ts",
     "check:mod-builder": "python -m unittest discover -s mod-builder/tests -t mod-builder",
     "knowledge:build": "node scripts/build-sl2-knowledge.js",
