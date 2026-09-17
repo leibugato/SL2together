@@ -136,11 +136,22 @@ async function createReferenceUrl(cloud, jobId) {
       false,
     );
   }
+  if (!fileId.startsWith('cloud://')) {
+    throw new AppError(
+      'MOD_BUILDER_NOT_CONFIGURED',
+      'STS2_REFERENCE_FILE_ID 必须使用 cloud:// 格式，不能填写 HTTPS 链接。',
+      false,
+    );
+  }
   const result = await cloud.getTempFileURL({ fileList: [fileId] });
   const item = result?.fileList?.[0];
-  if (!item?.tempFileURL) {
+  if (!item || (item.status !== undefined && Number(item.status) !== 0) || !item.tempFileURL) {
     console.error('reference_temp_url_error', { jobId, fileId, result });
-    throw new AppError('MOD_BUILDER_NOT_CONFIGURED', '引用包临时链接生成失败。', true);
+    throw new AppError(
+      'MOD_BUILDER_NOT_CONFIGURED',
+      `引用包临时链接生成失败：${item?.errMsg || '请检查 fileID 是否属于当前云环境。'}`,
+      false,
+    );
   }
   return item.tempFileURL;
 }
