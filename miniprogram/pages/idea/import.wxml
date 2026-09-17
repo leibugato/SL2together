@@ -1,0 +1,35 @@
+<view class="page-stage">
+  <image class="page-wallpaper" src="/images/wallpaper.jpg" mode="aspectFill"></image>
+  <view class="page-shell import-page">
+    <view class="edit-intro">
+      <view class="page-title">导入分享</view>
+      <view class="page-subtitle">输入其他用户提供的分享标识，保存为你的新草稿。</view>
+    </view>
+
+    <view wx:if="{{!cloudConfigured}}" class="empty-state surface">
+      尚未配置云开发环境，无法导入分享设计。
+    </view>
+
+    <view wx:else class="import-card surface">
+      <text class="field-label">分享标识</text>
+      <input
+        class="text-input share-input"
+        value="{{code}}"
+        maxlength="40"
+        placeholder="例如 SL2-ABCD-EFGH-JKLM-NPQR"
+        bindinput="onCodeInput"
+      />
+      <view class="import-actions">
+        <button class="secondary-button import-button" disabled="{{importing}}" bindtap="pasteCode">粘贴</button>
+        <button class="primary-button import-button" disabled="{{importing}}" bindtap="importCode">
+          {{importing ? '导入中...' : '导入并保存'}}
+        </button>
+      </view>
+      <view wx:if="{{errorMessage}}" class="import-error">{{errorMessage}}</view>
+    </view>
+
+    <view class="import-note">
+      导入只会复制设计类型、名称、正文、资源链接和类型补充字段。原用户身份、评估结果和历史记录不会被复制，当前导入记录默认为草稿。
+    </view>
+  </view>
+</view>

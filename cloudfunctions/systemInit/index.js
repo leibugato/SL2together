@@ -8,6 +8,7 @@ const db = cloud.database();
 const COLLECTIONS = [
   'users',
   'submissions',
+  'share_codes',
   'evaluations',
   'evaluation_jobs',
   'catalog_versions',

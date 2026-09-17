@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "mod": {
+    "id": "sl2t_block_relic",
+    "name": "格挡遗物演示",
+    "author": "SL2Together",
+    "description": "验证遗物触发和格挡效果。",
+    "version": "1.0.0"
+  },
+  "content": {
+    "kind": "RELIC",
+    "id": "FIRST_GUARD",
+    "name": "第一道防线",
+    "description": "战斗开始时获得5点格挡。",
+    "relic": {
+      "rarity": "Common",
+      "pool": "EventRelicPool",
+      "triggers": [
+        {
+          "type": "BEFORE_COMBAT_START",
+          "effects": [
+            {
+              "type": "GAIN_BLOCK",
+              "amount": 5
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

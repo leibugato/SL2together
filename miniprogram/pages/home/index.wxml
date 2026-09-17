@@ -2,10 +2,11 @@
   <image class="page-wallpaper" src="/images/wallpaper.jpg" mode="aspectFill"></image>
   <view class="page-shell home-page">
   <view class="home-header">
-    <view>
+    <view class="home-header-copy">
       <view class="page-title">{{appName}}</view>
       <view class="page-subtitle">记录设计想法，整理技术风险，再决定是否进入实现。</view>
     </view>
+    <button class="home-import-button" bindtap="openImport">导入分享</button>
   </view>
 
   <view wx:if="{{!cloudConfigured}}" class="surface setup-notice">

@@ -46,6 +46,27 @@
    `EVALUATING -> RUNNING`、`EVALUATED -> SUCCEEDED`、`EVALUATION_FAILED -> FAILED`。
 3. 新记录由云函数自动写入 `evaluationStatus`。
 
+## share_codes
+
+用于用户之间分享设计正文。分享标识是随机 bearer token，客户端不能直接读取集合；生成和导入都必须经过 `api` 云函数。
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `_openid` | string | 生成分享的用户 |
+| `code` | string | 格式化分享标识，例如 `SL2-ABCD-EFGH-JKLM-NPQR` |
+| `sourceSubmissionId` | string | 原提交 ID，仅服务端审计使用 |
+| `sourceContentVersion` | number | 分享时的内容版本 |
+| `sourceContentHash` | string | 分享时的内容哈希 |
+| `snapshot` | object | 分享时的类型、名称、正文、资源链接和补充字段快照 |
+| `status` | string | `ACTIVE` 或后续扩展状态 |
+| `importCount` | number | 成功导入次数 |
+| `lastImportedAt` | date/null | 最近导入时间 |
+| `expiresAt` | date | 标识过期时间，默认 90 天 |
+| `createdAt` | date | 创建时间 |
+| `updatedAt` | date | 更新时间 |
+
+导入会基于 `snapshot` 创建一条属于导入者的新 `submissions` 草稿，不复制原用户身份、评估结果、任务或历史记录。分享标识本身不公开 `OPENID`，但持有者可导入，因此应按敏感链接处理。
+
 ## evaluations
 
 评估结果只追加，不覆盖历史。

@@ -15,6 +15,8 @@ C:\Users\akaset\Desktop\sl2_xcx
 - 微信云开发身份初始化
 - 十类 MOD 设计表单
 - 草稿保存、编辑、提交、软删除，提交与评估解耦
+- 生成分享标识，其他用户可导入为独立草稿
+- 本地 MOD 生成器原型，支持白名单卡牌、遗物和 Buff
 - 我的提交列表与筛选
 - 提交详情和评估过期判断
 - Mock AI 可行性评估
@@ -65,3 +67,5 @@ npm test
 - `docs/database-schema.md`
 - `docs/ai-provider-and-knowledge-base.md`
 - `docs/admin-data-export.md`
+- `mod-builder/README.md`
+- `mod-builder/cloudbase.md`

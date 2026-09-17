@@ -80,6 +80,7 @@ export const ENV_ID = 'sts2-mod-dev-1g2h3i4j5k6l';
 
 - `users`
 - `submissions`
+- `share_codes`
 - `evaluations`
 - `evaluation_jobs`
 - `catalog_versions`
@@ -119,6 +120,7 @@ export const ENV_ID = 'sts2-mod-dev-1g2h3i4j5k6l';
 | `submissions` | `_openid` 升序 + `deletedAt` 升序 + `evaluationStatus` 升序 |
 | `submissions` | `_openid` 升序 + `deletedAt` 升序 + `type` 升序 + `updatedAt` 降序 |
 | `submissions` | `_openid` 升序 + `deletedAt` 升序 + `latestEvaluation.difficulty.level` 升序 + `updatedAt` 降序 |
+| `share_codes` | `code` 升序 |
 | `evaluations` | `_openid` 升序 + `submissionId` 升序 + `createdAt` 降序 |
 | `evaluation_jobs` | `_openid` 升序 + `submissionId` 升序 + `createdAt` 降序 |
 | `evaluation_jobs` | `status` 升序 + `createdAt` 升序 |
@@ -203,6 +205,7 @@ AI_API_KEY=你的密钥
 7. 在“提交记录”中能按类型、设计状态、评估状态和难度筛选。
 8. 修改设计后，旧评估显示已过期。
 9. 删除记录后，普通列表不再显示。
+10. 在详情页生成分享标识，再用另一个微信用户进入首页“导入分享”，确认可以保存为独立草稿。
 
 ## 10. 常见问题
 

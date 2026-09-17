@@ -5,6 +5,7 @@
     "pages/profile/index",
     "pages/idea/edit",
     "pages/idea/detail",
+    "pages/idea/import",
     "pages/evaluation/result",
     "pages/admin/index"
   ],

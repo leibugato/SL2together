@@ -72,6 +72,10 @@ async function dispatch(event, openid) {
       return idea.remove(db, openid, event);
     case 'idea.submitMine':
       return idea.submitMine(db, openid, event);
+    case 'idea.createShare':
+      return idea.createShare(db, openid, event);
+    case 'idea.importShared':
+      return idea.importShared(db, openid, event);
     case 'idea.dashboard':
       return idea.dashboard(db, openid);
     case 'evaluation.start':

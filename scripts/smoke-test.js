@@ -6,6 +6,11 @@ const {
   sanitizeModelResult,
 } = require('../cloudfunctions/evaluationRunner/lib/schema');
 const { publicSubmission } = require('../cloudfunctions/api/lib/core');
+const {
+  createShareCode,
+  getShareExpiry,
+  normalizeShareCode,
+} = require('../cloudfunctions/api/lib/share');
 
 function baseSubmission(overrides = {}) {
   return {
@@ -142,5 +147,12 @@ const migratedLegacy = publicSubmission({
 });
 assert.equal(migratedLegacy.status, 'DRAFT');
 assert.equal(migratedLegacy.evaluationStatus, 'SUCCEEDED');
+
+const shareCode = createShareCode();
+assert.match(shareCode, /^SL2-[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}$/);
+assert.equal(normalizeShareCode(shareCode.toLowerCase()), shareCode);
+assert.equal(normalizeShareCode(shareCode.replace(/-/g, ' ')), shareCode);
+assert.ok(getShareExpiry().getTime() > Date.now());
+assert.throws(() => normalizeShareCode('SL2-INVALID'));
 
 console.log('smoke-test: all checks passed');

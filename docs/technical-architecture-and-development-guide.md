@@ -219,6 +219,7 @@ sl2_xcx/
   |                         +--> 用户上传的图片或音频
   +--> users
   +--> submissions
+  +--> share_codes
   +--> evaluations
   +--> evaluation_jobs
   +--> usage_daily
@@ -411,6 +412,10 @@ MAX_DAILY_EVALUATIONS=10
   "updatedAt": "serverDate"
 }
 ```
+
+#### `share_codes`
+
+保存用户主动生成的分享标识和设计快照。标识由云函数随机生成，客户端只提交生成或导入请求，不能直接读取集合。导入时服务端创建一条属于导入者的新 `submissions` 草稿，不复制原用户身份、评估结果或任务记录。
 
 #### `evaluations`
 

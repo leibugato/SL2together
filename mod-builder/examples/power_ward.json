@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "mod": {
+    "id": "sl2t_ward_power",
+    "name": "护盾 Buff 演示",
+    "author": "SL2Together",
+    "description": "验证 Buff 和测试 Token 卡。",
+    "version": "1.0.0"
+  },
+  "content": {
+    "kind": "POWER",
+    "id": "WARD_POWER",
+    "name": "护盾",
+    "description": "每当你打出一张牌，获得等同于层数的格挡。",
+    "power": {
+      "type": "Buff",
+      "stackType": "Counter",
+      "triggers": [
+        {
+          "type": "AFTER_CARD_PLAYED",
+          "effects": [
+            {
+              "type": "GAIN_BLOCK"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

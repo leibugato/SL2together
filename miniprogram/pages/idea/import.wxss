@@ -1,0 +1,41 @@
+.import-page {
+  padding-top: 20rpx;
+}
+
+.import-card {
+  margin-top: 20rpx;
+  padding: 30rpx;
+}
+
+.share-input {
+  text-transform: uppercase;
+}
+
+.import-actions {
+  display: grid;
+  grid-template-columns: 180rpx minmax(0, 1fr);
+  gap: 14rpx;
+  margin-top: 28rpx;
+}
+
+.import-button {
+  margin: 0;
+}
+
+.import-error {
+  margin-top: 20rpx;
+  padding: 18rpx 20rpx;
+  background: #fff3ef;
+  border-left: 5rpx solid #a63d2f;
+  border-radius: 8rpx;
+  color: #8c3d31;
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
+.import-note {
+  margin-top: 24rpx;
+  color: #6d716d;
+  font-size: 24rpx;
+  line-height: 1.7;
+}

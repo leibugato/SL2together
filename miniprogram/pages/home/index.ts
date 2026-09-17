@@ -86,4 +86,10 @@ Page({
       url: '/pages/idea/list',
     });
   },
+
+  openImport() {
+    wx.navigateTo({
+      url: '/pages/idea/import',
+    });
+  },
 });

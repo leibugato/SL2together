@@ -9,6 +9,11 @@ const {
   publicSubmission,
   toIso,
 } = require('./core');
+const {
+  createShareCode,
+  getShareExpiry,
+  normalizeShareCode,
+} = require('./share');
 
 async function listMine(db, openid, event) {
   const page = Math.max(0, Math.floor(Number(event.page || 0)));
@@ -161,6 +166,98 @@ async function submitMine(db, openid, event) {
   };
 }
 
+async function createShare(db, openid, event) {
+  await ensureCollection(db, 'share_codes');
+  const submission = await getOwnedSubmission(db, openid, event.id);
+  const snapshot = normalizeForm(submission);
+
+  let code = '';
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const candidate = createShareCode();
+    const existing = await db.collection('share_codes').where({ code: candidate }).limit(1).get();
+    if (!existing.data.length) {
+      code = candidate;
+      break;
+    }
+  }
+  assert(code, 'INTERNAL_ERROR', '分享标识生成失败，请稍后重试。', true);
+
+  const expiresAt = getShareExpiry();
+  const now = db.serverDate();
+  await db.collection('share_codes').add({
+    data: {
+      _openid: openid,
+      code,
+      sourceSubmissionId: submission._id,
+      sourceContentVersion: submission.contentVersion || 1,
+      sourceContentHash: submission.contentHash,
+      snapshot,
+      status: 'ACTIVE',
+      importCount: 0,
+      lastImportedAt: null,
+      expiresAt,
+      createdAt: now,
+      updatedAt: now,
+    },
+  });
+
+  return {
+    share: {
+      code,
+      expiresAt: expiresAt.toISOString(),
+      sourceName: snapshot.name,
+      sourceContentVersion: submission.contentVersion || 1,
+    },
+  };
+}
+
+async function importShared(db, openid, event) {
+  await ensureCollection(db, 'share_codes');
+  const code = normalizeShareCode(event.code);
+  const result = await db.collection('share_codes').where({ code }).limit(1).get();
+  const share = result.data[0];
+  assert(share && share.status === 'ACTIVE', 'NOT_FOUND', '分享标识不存在或已失效。');
+
+  const expiresAt = toIso(share.expiresAt);
+  assert(expiresAt && new Date(expiresAt).getTime() > Date.now(), 'NOT_FOUND', '分享标识已过期。');
+
+  const form = normalizeForm(share.snapshot);
+  const now = db.serverDate();
+  const created = await db.collection('submissions').add({
+    data: {
+      _openid: openid,
+      ...form,
+      status: 'DRAFT',
+      evaluationStatus: 'NOT_EVALUATED',
+      contentVersion: 1,
+      contentHash: contentHash(form),
+      latestEvaluationId: null,
+      latestEvaluation: null,
+      createdAt: now,
+      updatedAt: now,
+      submittedAt: null,
+      deletedAt: null,
+    },
+  });
+
+  await db.collection('share_codes').doc(share._id).update({
+    data: {
+      importCount: db.command.inc(1),
+      lastImportedAt: now,
+      updatedAt: now,
+    },
+  });
+
+  const createdResult = await db.collection('submissions').doc(created._id).get();
+  return {
+    submission: publicSubmission(createdResult.data),
+    source: {
+      name: form.name,
+      contentVersion: share.sourceContentVersion || 1,
+    },
+  };
+}
+
 async function dashboard(db, openid) {
   const base = {
     _openid: openid,
@@ -188,8 +285,10 @@ async function dashboard(db, openid) {
 
 module.exports = {
   create,
+  createShare,
   dashboard,
   getMine,
+  importShared,
   listMine,
   remove,
   submitMine,

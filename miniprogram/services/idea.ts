@@ -28,6 +28,22 @@ export interface IdeaDetailResponse {
   evaluationStale: boolean;
 }
 
+export interface IdeaShareResponse {
+  share: {
+    code: string;
+    expiresAt: string;
+    sourceName: string;
+    sourceContentVersion: number;
+  };
+}
+
+export interface IdeaImportResponse extends IdeaSaveResponse {
+  source: {
+    name: string;
+    contentVersion: number;
+  };
+}
+
 export function bootstrapUser() {
   return callApi<UserBootstrap>('user.bootstrap');
 }
@@ -66,6 +82,14 @@ export function deleteIdea(id: string) {
 
 export function submitIdea(id: string) {
   return callApi<IdeaSaveResponse>('idea.submitMine', { id });
+}
+
+export function createIdeaShare(id: string) {
+  return callApi<IdeaShareResponse>('idea.createShare', { id });
+}
+
+export function importSharedIdea(code: string) {
+  return callApi<IdeaImportResponse>('idea.importShared', { code });
 }
 
 export function getDashboard() {

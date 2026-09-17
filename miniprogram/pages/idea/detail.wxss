@@ -171,3 +171,68 @@
   gap: 14rpx;
   margin-top: 40rpx;
 }
+
+.share-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 44rpx;
+  background: rgba(31, 35, 32, 0.46);
+}
+
+.share-card {
+  width: 100%;
+  max-width: 620rpx;
+  padding: 34rpx 30rpx 26rpx;
+  background: rgba(255, 252, 246, 0.98);
+  border: 1rpx solid rgba(220, 211, 197, 0.96);
+  border-radius: 24rpx;
+  box-shadow: 0 24rpx 60rpx rgba(31, 35, 32, 0.24);
+}
+
+.share-title {
+  color: #27302c;
+  font-size: 34rpx;
+  font-weight: 750;
+}
+
+.share-description {
+  margin-top: 14rpx;
+  color: #666b67;
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.share-code {
+  margin-top: 26rpx;
+  padding: 24rpx 18rpx;
+  background: #e8eeeb;
+  border: 1rpx solid #cbd7d2;
+  border-radius: 14rpx;
+  color: #245f5a;
+  font-size: 31rpx;
+  font-weight: 750;
+  text-align: center;
+  word-break: break-all;
+}
+
+.share-hint {
+  margin-top: 14rpx;
+  color: #858984;
+  font-size: 22rpx;
+  line-height: 1.55;
+}
+
+.share-action {
+  margin-top: 18rpx;
+}
+
+.share-close {
+  margin-top: 6rpx;
+}

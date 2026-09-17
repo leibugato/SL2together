@@ -1,5 +1,5 @@
 import { isCloudConfigured } from '../../config/env';
-import { deleteIdea, getIdea, submitIdea } from '../../services/idea';
+import { createIdeaShare, deleteIdea, getIdea, submitIdea } from '../../services/idea';
 import { runEvaluation } from '../../services/evaluation';
 import type { Evaluation, Submission } from '../../types/domain';
 import { evaluationStatusLabel, formatDate, statusLabel, typeLabel } from '../../utils/format';
@@ -10,6 +10,8 @@ Page({
     id: '',
     loading: true,
     evaluating: false,
+    shareLoading: false,
+    shareCode: '',
     errorMessage: '',
     submission: null as Submission | null,
     evaluation: null as Evaluation | null,
@@ -98,6 +100,46 @@ Page({
     } finally {
       this.setData({ evaluating: false });
     }
+  },
+
+  async generateShare() {
+    if (this.data.shareLoading || !this.data.submission) return;
+    this.setData({ shareLoading: true });
+    try {
+      const result = await createIdeaShare(this.data.id);
+      this.setData({ shareCode: result.share.code });
+    } catch (error) {
+      wx.showModal({
+        title: '生成失败',
+        content: error instanceof Error ? error.message : '请稍后重试。',
+        showCancel: false,
+      });
+    } finally {
+      this.setData({ shareLoading: false });
+    }
+  },
+
+  copyShareCode() {
+    if (!this.data.shareCode) return;
+    wx.setClipboardData({
+      data: this.data.shareCode,
+    });
+  },
+
+  closeShare() {
+    this.setData({ shareCode: '' });
+  },
+
+  preventBubble() {},
+
+  onShareAppMessage() {
+    const submission = this.data.submission;
+    return {
+      title: submission ? `${submission.name}｜SL2Together` : 'SL2Together 设计分享',
+      path: this.data.shareCode
+        ? `/pages/idea/import?code=${encodeURIComponent(this.data.shareCode)}`
+        : '/pages/home/index',
+    };
   },
 
   confirmSubmit() {

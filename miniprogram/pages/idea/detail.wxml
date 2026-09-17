@@ -92,6 +92,13 @@
     </view>
 
     <view class="detail-actions">
+      <button
+        class="secondary-button"
+        disabled="{{shareLoading}}"
+        bindtap="generateShare"
+      >
+        {{shareLoading ? '生成分享标识中...' : '生成分享标识'}}
+      </button>
       <button class="secondary-button" bindtap="editIdea">继续修改</button>
       <button
         wx:if="{{submission.status === 'DRAFT'}}"
@@ -113,6 +120,18 @@
       ></image>
       <view class="evaluation-loading-title">正在重新评估</view>
       <view class="evaluation-loading-copy">旧结果会保留，完成后自动刷新</view>
+    </view>
+  </view>
+
+  <view wx:if="{{shareCode}}" class="share-mask" bindtap="closeShare">
+    <view class="share-card" catchtap="preventBubble">
+      <view class="share-title">设计分享标识</view>
+      <view class="share-description">其他用户可复制此标识，在首页“导入分享”中保存为一份新草稿。</view>
+      <view class="share-code">{{shareCode}}</view>
+      <view class="share-hint">标识有效期 90 天，不包含用户身份和原有评估结果。</view>
+      <button class="primary-button share-action" bindtap="copyShareCode">复制标识</button>
+      <button class="secondary-button share-action" open-type="share">发送给微信好友</button>
+      <button class="text-button share-close" bindtap="closeShare">关闭</button>
     </view>
   </view>
   </view>

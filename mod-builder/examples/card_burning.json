@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "mod": {
+    "id": "sl2t_burning_card",
+    "name": "焚烧演示",
+    "author": "SL2Together",
+    "description": "验证消耗和消耗堆自动出牌行为。",
+    "version": "1.0.0"
+  },
+  "content": {
+    "kind": "CARD",
+    "id": "BURNING_STRIKE",
+    "name": "焚烧打击",
+    "description": "造成{Damage:diff()}点伤害。消耗。被消耗后，在自动出牌阶段自动打出。",
+    "card": {
+      "cost": 1,
+      "type": "Attack",
+      "target": "AnyEnemy",
+      "rarity": "Uncommon",
+      "pool": "ColorlessCardPool",
+      "keywords": ["EXHAUST"],
+      "effects": [
+        {
+          "type": "DAMAGE",
+          "amount": 6,
+          "target": "CARD_TARGET",
+          "upgradeDelta": 3
+        }
+      ],
+      "behaviors": [
+        {
+          "type": "AUTO_PLAY_FROM_EXHAUST"
+        }
+      ]
+    }
+  }
+}
