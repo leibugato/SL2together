@@ -66,6 +66,15 @@ EFFECTS = {
     "GAIN_ENERGY",
     "HEAL",
     "APPLY_POWER",
+    "SEARCH_CARD",
+}
+
+NON_CARD_EFFECTS = {
+    "GAIN_BLOCK",
+    "DRAW",
+    "GAIN_ENERGY",
+    "HEAL",
+    "APPLY_POWER",
 }
 
 RELIC_TRIGGERS = {
@@ -83,8 +92,8 @@ POWER_TRIGGERS = {
 TRIGGER_EFFECTS = {
     "AFTER_OBTAINED": {"HEAL"},
     "BEFORE_COMBAT_START": {"GAIN_BLOCK"},
-    "AFTER_CARD_PLAYED": EFFECTS - {"DAMAGE"},
-    "AFTER_TURN_END": EFFECTS - {"DAMAGE"},
+    "AFTER_CARD_PLAYED": NON_CARD_EFFECTS,
+    "AFTER_TURN_END": NON_CARD_EFFECTS,
 }
 
 
@@ -130,6 +139,23 @@ def _validate_effect(effect: dict, kind: str, index: int) -> None:
         _positive_int(effect.get("amount"), f"effects[{index}].amount", 20)
         target = effect.get("target", "CARD_TARGET")
         _require(target in {"CARD_TARGET", "OWNER"}, "APPLY_POWER 目标只能是 CARD_TARGET 或 OWNER。")
+        return
+
+    if effect_type == "SEARCH_CARD":
+        _require(kind == "CARD", "第一版只允许卡牌检索其他卡牌。")
+        _require(
+            effect.get("source") in {"DRAW", "DISCARD", "EXHAUST"},
+            "SEARCH_CARD 来源只能是 DRAW、DISCARD 或 EXHAUST。",
+        )
+        _require(
+            effect.get("destination", "HAND") in {"HAND", "DRAW_TOP"},
+            "SEARCH_CARD 去向只能是 HAND 或 DRAW_TOP。",
+        )
+        _require(
+            effect.get("filter", "ANY") in {"ANY", "ATTACK", "SKILL", "POWER"},
+            "SEARCH_CARD 过滤条件只能是 ANY、ATTACK、SKILL 或 POWER。",
+        )
+        _positive_int(effect.get("count", 1), f"effects[{index}].count", 3)
         return
 
     if effect_type == "DAMAGE":

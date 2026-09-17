@@ -156,6 +156,28 @@ function buildCardSpec(submission) {
     });
   }
 
+  if (/检索|搜寻|搜索|查找/.test(text)) {
+    const source = /消耗(?:牌堆|堆)/.test(text)
+      ? 'EXHAUST'
+      : /弃牌堆/.test(text)
+        ? 'DISCARD'
+        : 'DRAW';
+    const filter = /攻击牌/.test(text)
+      ? 'ATTACK'
+      : /技能牌/.test(text)
+        ? 'SKILL'
+        : /能力牌/.test(text)
+          ? 'POWER'
+          : 'ANY';
+    effects.push({
+      type: 'SEARCH_CARD',
+      source,
+      destination: /牌堆顶/.test(text) ? 'DRAW_TOP' : 'HAND',
+      filter,
+      count: extractNumber(text, /(\d+)\s*张/, 1, 3),
+    });
+  }
+
   const power = detectPower(text);
   if (power) {
     effects.push({

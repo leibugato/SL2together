@@ -185,6 +185,11 @@ const KEYWORD_RULES = [
     reason: '需要额外选择界面，并处理取消、空牌堆和多人回滚。',
   },
   {
+    pattern: /检索|搜寻|搜索|查找/,
+    dimensions: { logicComplexity: 2, visualAssets: 2, compatibility: 1 },
+    reason: '卡牌检索需要处理来源牌堆、筛选条件、无匹配结果和检索后的去向。',
+  },
+  {
     pattern: /新资源|专属能量|资源条|独特机制/,
     dimensions: { integrationScope: 6, visualAssets: 4, compatibility: 3 },
     reason: '新增角色资源通常涉及 UI、存档、数值和多个池系统。',

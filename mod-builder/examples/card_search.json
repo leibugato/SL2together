@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "mod": {
+    "id": "sl2t_search_card",
+    "name": "卡牌检索演示",
+    "author": "SL2Together",
+    "description": "验证从弃牌堆检索攻击牌。",
+    "version": "1.0.0"
+  },
+  "content": {
+    "kind": "CARD",
+    "id": "RECOVER_STRIKE",
+    "name": "追回打击",
+    "description": "从弃牌堆检索一张攻击牌并加入手牌。消耗。",
+    "card": {
+      "cost": 1,
+      "type": "Skill",
+      "target": "Self",
+      "rarity": "Common",
+      "pool": "ColorlessCardPool",
+      "keywords": ["EXHAUST"],
+      "effects": [
+        {
+          "type": "SEARCH_CARD",
+          "source": "DISCARD",
+          "destination": "HAND",
+          "filter": "ATTACK",
+          "count": 1
+        }
+      ]
+    }
+  }
+}

@@ -21,6 +21,8 @@ def _card_dynamic_vars(card: dict) -> list[str]:
     values: list[str] = []
     for effect in card["effects"]:
         effect_type = effect["type"]
+        if effect_type == "SEARCH_CARD":
+            continue
         amount = effect["amount"]
         if effect_type == "DAMAGE":
             values.append(f"new DamageVar({amount}m, ValueProp.Move)")
@@ -79,6 +81,38 @@ def _card_effect_lines(effects: list[dict]) -> list[str]:
                 f'        await PowerCmd.Apply<{effect["power"]}>(choiceContext, {target}, '
                 f'base.DynamicVars["{effect["power"]}"].BaseValue, base.Owner.Creature, this);'
             )
+        elif effect_type == "SEARCH_CARD":
+            source_pile = {
+                "DRAW": "PileType.Draw",
+                "DISCARD": "PileType.Discard",
+                "EXHAUST": "PileType.Exhaust",
+            }[effect["source"]]
+            filter_expression = {
+                "ANY": "(CardModel _) => true",
+                "ATTACK": "(CardModel card) => card.Type == CardType.Attack",
+                "SKILL": "(CardModel card) => card.Type == CardType.Skill",
+                "POWER": "(CardModel card) => card.Type == CardType.Power",
+            }[effect.get("filter", "ANY")]
+            destination = effect.get("destination", "HAND")
+            lines.extend(
+                [
+                    "        IEnumerable<CardModel> selectedCards = await CardSelectCmd.FromCombatPile(",
+                    "            choiceContext,",
+                    f"            {source_pile}.GetPile(base.Owner),",
+                    "            base.Owner,",
+                    f"            new CardSelectorPrefs(base.SelectionScreenPrompt, {effect.get('count', 1)}),",
+                    f"            {filter_expression});",
+                    "        foreach (CardModel selectedCard in selectedCards)",
+                    "        {",
+                    "            await CardPileCmd.Add(selectedCard, "
+                    + (
+                        "PileType.Draw, CardPilePosition.Top);"
+                        if destination == "DRAW_TOP"
+                        else "PileType.Hand);"
+                    ),
+                    "        }",
+                ]
+            )
     return lines
 
 
@@ -97,6 +131,7 @@ def render_card(namespace: str, content: dict) -> str:
         "using System.Collections.Generic;",
         "using System.Threading.Tasks;",
         "using MegaCrit.Sts2.Core.Commands;",
+        "using MegaCrit.Sts2.Core.CardSelection;",
         "using MegaCrit.Sts2.Core.Entities.Cards;",
         "using MegaCrit.Sts2.Core.Entities.Players;",
         "using MegaCrit.Sts2.Core.GameActions.Multiplayer;",
@@ -561,6 +596,8 @@ def generate_project(spec: dict, output_dir: Path) -> Path:
             f"{content['id']}.title": content["name"],
             f"{content['id']}.description": content["description"],
         }
+        if any(effect["type"] == "SEARCH_CARD" for effect in card["effects"]):
+            localizations["cards"][f"{content['id']}.selectionScreenPrompt"] = "选择要检索的卡牌。"
     elif kind == "RELIC":
         code, pools, class_name = render_relic(namespace, content)
         _write(project / "src" / "Core" / "Models" / "Cards" / f"{class_name}.cs", code)
