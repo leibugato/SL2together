@@ -55,13 +55,13 @@ def ensure_reference_kit() -> Path:
     return target
 
 
-def _authorize(authorization: str | None) -> None:
+def _authorize(authorization: str | None, mod_build_token: str | None) -> None:
     expected = os.environ.get("MOD_BUILD_TOKEN", "")
     if not expected:
         raise HTTPException(status_code=503, detail="MOD_BUILD_TOKEN 未配置。")
-    supplied = ""
+    supplied = (mod_build_token or "").strip()
     if authorization and authorization.startswith("Bearer "):
-        supplied = authorization.removeprefix("Bearer ").strip()
+        supplied = supplied or authorization.removeprefix("Bearer ").strip()
     if not supplied or not hmac.compare_digest(supplied, expected):
         raise HTTPException(status_code=401, detail="未授权。")
 
@@ -88,8 +88,9 @@ def health() -> dict:
 def build(
     request: BuildRequest,
     authorization: str | None = Header(default=None),
+    x_mod_build_token: str | None = Header(default=None, alias="X-Mod-Build-Token"),
 ) -> dict:
-    _authorize(authorization)
+    _authorize(authorization, x_mod_build_token)
     reference_dir = ensure_reference_kit()
     godot_bin = Path(os.environ.get("GODOT_BIN", "/usr/local/bin/godot"))
     if not godot_bin.exists():

@@ -74,4 +74,10 @@ Content-Type: application/json
 }
 ```
 
+如果请求先经过 CloudBase API 网关，网关占用 `Authorization` 时，请把服务令牌改放：
+
+```http
+X-Mod-Build-Token: <MOD_BUILD_TOKEN>
+```
+
 返回两个 ZIP 的 Base64。微信云函数负责把 Base64 写入云存储，并清理任务记录。不要把 `MOD_BUILD_TOKEN` 放进小程序代码。
