@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 
+const MOD_SPEC_VERSION = 'modspec-v2';
+
 const IDEA_TYPES = [
   'CARD',
   'RELIC',
@@ -287,6 +289,7 @@ module.exports = {
   SUBMISSION_STATUSES,
   EVALUATION_STATUSES,
   JOB_STATUSES,
+  MOD_SPEC_VERSION,
   AppError,
   assert,
   cleanText,

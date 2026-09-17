@@ -24,6 +24,7 @@ Page({
     modJob: null as ModGenerationJob | null,
     evaluationStale: false,
     modJobStale: false,
+    modGenerationCurrent: false,
     createdLabel: '',
     dimensions: [] as Array<{
       key: string;
@@ -63,10 +64,14 @@ Page({
         evaluationStale: Boolean(
           result.submission && result.evaluation.contentHash !== result.submission.contentHash,
         ),
+        modGenerationCurrent: result.evaluation.modGeneration?.version === 'modspec-v2',
         createdLabel: formatDate(result.evaluation.createdAt),
         dimensions: dimensionRows(result.evaluation.dimensions),
       });
-      if (result.evaluation.modGeneration?.supported) {
+      if (
+        result.evaluation.modGeneration?.supported &&
+        result.evaluation.modGeneration?.version === 'modspec-v2'
+      ) {
         getLatestModJob(this.data.submissionId)
           .then((modResult) => {
             if (modResult.job) {
@@ -127,6 +132,14 @@ Page({
 
   async generateMod() {
     if (this.data.generatingMod) return;
+    if (!this.data.modGenerationCurrent) {
+      wx.showModal({
+        title: '需要重新评估',
+        content: '当前评估使用的 MOD 生成规则较旧，请重新评估后再生成。',
+        showCancel: false,
+      });
+      return;
+    }
     if (this.data.evaluationStale) {
       wx.showModal({
         title: '设计已修改',

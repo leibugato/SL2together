@@ -2,6 +2,7 @@ const http = require('http');
 const https = require('https');
 const {
   AppError,
+  MOD_SPEC_VERSION,
   assert,
   ensureCollection,
   getOwnedSubmission,
@@ -121,7 +122,8 @@ async function getEvaluationForSubmission(db, openid, submission) {
       if (
         result.data &&
         result.data._openid === openid &&
-        result.data.contentHash === submission.contentHash
+        result.data.contentHash === submission.contentHash &&
+        result.data.modGeneration?.version === MOD_SPEC_VERSION
       ) {
         return result.data;
       }
@@ -137,7 +139,10 @@ async function getEvaluationForSubmission(db, openid, submission) {
   return (
     result.data
       .filter(
-        (item) => item._openid === openid && item.contentHash === submission.contentHash,
+        (item) =>
+          item._openid === openid &&
+          item.contentHash === submission.contentHash &&
+          item.modGeneration?.version === MOD_SPEC_VERSION,
       )
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0] ||
     null
@@ -184,6 +189,11 @@ async function generate(db, cloud, openid, event) {
     '设计已修改，请重新评估后再生成 MOD。',
   );
   const modGeneration = evaluation.modGeneration || null;
+  assert(
+    modGeneration?.version === MOD_SPEC_VERSION,
+    'CONFLICT',
+    '评估结果版本较旧，请重新评估后再生成 MOD。',
+  );
   assert(modGeneration?.supported, 'VALIDATION_ERROR', modGeneration?.reason || '该设计不支持自动生成 MOD。');
   assert(modGeneration.spec, 'INTERNAL_ERROR', '评估结果缺少生成规格，请重新评估。');
 

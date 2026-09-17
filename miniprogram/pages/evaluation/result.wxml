@@ -99,7 +99,10 @@
 
     <view wx:if="{{evaluation.modGeneration}}" class="section mod-generation-section">
       <view class="section-title">生成可安装 MOD</view>
-      <view wx:if="{{evaluation.modGeneration.supported}}" class="mod-supported">
+      <view
+        wx:if="{{evaluation.modGeneration.supported && modGenerationCurrent}}"
+        class="mod-supported"
+      >
         <view class="mod-status">该设计在白名单范围内，可以自动生成源码和 MOD 文件。</view>
         <button class="text-button mod-support-link" bindtap="openModSupport">查看完整可生成范围</button>
 
@@ -177,6 +180,11 @@
           <view>{{modJob.errorMessage || '生成失败，请稍后重试。'}}</view>
           <button class="text-button" bindtap="generateMod">重新生成</button>
         </view>
+      </view>
+
+      <view wx:elif="{{evaluation.modGeneration.supported}}" class="mod-unsupported">
+        当前评估使用的是旧版 MOD 生成规则，不会生成完整 Hash 长名称。请重新评估后再生成。
+        <button class="text-button mod-stale-action" bindtap="editIdea">返回修改并重新评估</button>
       </view>
 
       <view wx:else class="mod-unsupported">

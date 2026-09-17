@@ -39,6 +39,8 @@ const KEYWORD_MAP = [
   [/永恒/, 'ETERNAL'],
 ];
 
+const MOD_SPEC_VERSION = 'modspec-v2';
+
 function textOf(submission) {
   return `${submission.name || ''}\n${submission.designText || ''}`;
 }
@@ -112,6 +114,7 @@ function baseSpec(submission) {
 
 function unsupported(reason) {
   return {
+    version: MOD_SPEC_VERSION,
     supported: false,
     reason,
     spec: null,
@@ -221,7 +224,7 @@ function buildCardSpec(submission) {
       behaviors,
     },
   };
-  return { supported: true, reason: '', spec };
+  return { version: MOD_SPEC_VERSION, supported: true, reason: '', spec };
 }
 
 function relicTrigger(text, extraTrigger) {
@@ -294,7 +297,7 @@ function buildRelicSpec(submission) {
       triggers: [{ type: trigger, effects }],
     },
   };
-  return { supported: true, reason: '', spec };
+  return { version: MOD_SPEC_VERSION, supported: true, reason: '', spec };
 }
 
 function powerTrigger(text, extraTrigger) {
@@ -336,7 +339,7 @@ function buildPowerSpec(submission) {
       triggers: [{ type: trigger, effects }],
     },
   };
-  return { supported: true, reason: '', spec };
+  return { version: MOD_SPEC_VERSION, supported: true, reason: '', spec };
 }
 
 function buildRuleModSpec(submission) {
@@ -349,5 +352,6 @@ function buildRuleModSpec(submission) {
 }
 
 module.exports = {
+  MOD_SPEC_VERSION,
   buildRuleModSpec,
 };

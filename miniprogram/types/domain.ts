@@ -158,6 +158,7 @@ export interface Evaluation extends EvaluationSummary {
   }>;
   dimensions: Record<string, number>;
   modGeneration?: {
+    version?: string;
     supported: boolean;
     reason: string;
     spec: Record<string, unknown> | null;

@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const {
   AppError,
+  MOD_SPEC_VERSION,
   assert,
   getCatalogVersion,
   getMaxDailyEvaluations,
@@ -79,7 +80,8 @@ async function start(db, openid, event) {
       item.model?.provider === provider &&
       item.model?.catalogVersion === catalogVersion &&
       item.model?.promptVersion === promptVersion &&
-      item.model?.model === model,
+      item.model?.model === model &&
+      item.modGeneration?.version === MOD_SPEC_VERSION,
   );
   if (cached) {
     await db.collection('submissions').doc(submission._id).update({
