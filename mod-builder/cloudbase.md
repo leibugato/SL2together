@@ -70,9 +70,12 @@ Content-Type: application/json
 
 {
   "jobId": "job_xxx",
+  "referenceUrl": "一次性HTTPS下载地址",
   "spec": {}
 }
 ```
+
+当容器中还没有引用包时，可以使用 `referenceUrl` 携带刚生成的 CloudBase 文件临时链接。容器下载后会缓存到 `/tmp/sl2-reference-kit`，同一实例后续构建无需重复下载。
 
 如果请求先经过 CloudBase API 网关，网关占用 `Authorization` 时，请把服务令牌改放：
 

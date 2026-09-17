@@ -23,6 +23,7 @@ REQUIRED_REFERENCE_FILES = ("sts2.dll", "GodotSharp.dll", "0Harmony.dll")
 class BuildRequest(BaseModel):
     jobId: str = Field(min_length=1, max_length=80)
     spec: dict
+    referenceUrl: str | None = Field(default=None, max_length=2048)
 
 
 def _reference_dir() -> Path:
@@ -32,10 +33,11 @@ def _reference_dir() -> Path:
     return Path("/tmp/sl2-reference-kit")
 
 
-def _download_reference_kit(target: Path) -> None:
-    url = os.environ.get("STS2_REFERENCE_URL", "").strip()
+def _download_reference_kit(target: Path, url: str) -> None:
     if not url:
         raise RuntimeError("缺少 STS2_DLL_DIR，也没有配置 STS2_REFERENCE_URL。")
+    if not url.startswith("https://"):
+        raise RuntimeError("引用包地址必须使用 HTTPS。")
     archive = target.with_suffix(".zip")
     target.mkdir(parents=True, exist_ok=True)
     urllib.request.urlretrieve(url, archive)
@@ -44,11 +46,12 @@ def _download_reference_kit(target: Path) -> None:
     archive.unlink(missing_ok=True)
 
 
-def ensure_reference_kit() -> Path:
+def ensure_reference_kit(reference_url: str | None = None) -> Path:
     target = _reference_dir()
     if all((target / name).exists() for name in REQUIRED_REFERENCE_FILES):
         return target
-    _download_reference_kit(target)
+    url = (reference_url or os.environ.get("STS2_REFERENCE_URL", "")).strip()
+    _download_reference_kit(target, url)
     missing = [name for name in REQUIRED_REFERENCE_FILES if not (target / name).exists()]
     if missing:
         raise RuntimeError(f"引用目录缺少文件：{', '.join(missing)}")
@@ -101,7 +104,7 @@ def build(
 ) -> dict:
     _authorize(authorization, x_mod_build_token)
     try:
-        reference_dir = ensure_reference_kit()
+        reference_dir = ensure_reference_kit(request.referenceUrl)
     except Exception as error:
         message = str(error).replace(os.environ.get("STS2_REFERENCE_URL", ""), "<STS2_REFERENCE_URL>")
         print(f"reference_error jobId={request.jobId} type={type(error).__name__} message={message}")
