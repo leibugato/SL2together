@@ -449,6 +449,7 @@ def render_project_files(project: Path, spec: dict) -> None:
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <AssemblyName>{mod_id}</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -476,7 +477,7 @@ config/name="{mod_id}"
 config/features=PackedStringArray("4.5", "C#")
 
 [dotnet]
-project/assembly_name="sl2mod"
+project/assembly_name="{mod_id}"
 """,
     )
     _write(

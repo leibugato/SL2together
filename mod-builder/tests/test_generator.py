@@ -36,6 +36,14 @@ class GeneratorTests(unittest.TestCase):
             project = generate_project(spec, Path(directory) / "mod")
             self.assertTrue((project / "build" / "sl2t_burning_card.json").exists())
             self.assertTrue((project / "ModInitializer.cs").exists())
+            self.assertIn(
+                "<AssemblyName>sl2t_burning_card</AssemblyName>",
+                (project / "sl2mod.csproj").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                'project/assembly_name="sl2t_burning_card"',
+                (project / "project.godot").read_text(encoding="utf-8"),
+            )
             self.assertTrue((project / "src" / "Core" / "Models" / "Cards" / "BurningStrike.cs").exists())
             card_code = (project / "src" / "Core" / "Models" / "Cards" / "BurningStrike.cs").read_text(encoding="utf-8")
             self.assertIn("CardKeyword.Exhaust", card_code)

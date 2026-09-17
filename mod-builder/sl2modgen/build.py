@@ -53,7 +53,7 @@ def build_project(
     test_guide = build_test_guide(spec)
 
     _run(["dotnet", "build", str(project / "sl2mod.csproj"), f"-p:GameDir={game_dir}", "--nologo"], project)
-    compiled_dll = project / ".godot" / "mono" / "temp" / "bin" / "Debug" / "sl2mod.dll"
+    compiled_dll = project / ".godot" / "mono" / "temp" / "bin" / "Debug" / f"{mod_id}.dll"
     if not compiled_dll.exists():
         raise RuntimeError(f"dotnet build 未生成 DLL：{compiled_dll}")
     shutil.copyfile(compiled_dll, build_dir / f"{mod_id}.dll")
