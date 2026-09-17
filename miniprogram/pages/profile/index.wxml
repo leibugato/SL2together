@@ -36,6 +36,10 @@
       <text>用户数据管理</text>
       <text class="menu-arrow">›</text>
     </button>
+    <button class="menu-row" bindtap="openModSupport">
+      <text>可生成 MOD 范围</text>
+      <text class="menu-arrow">›</text>
+    </button>
     <button class="menu-row" bindtap="showPrivacy">
       <text>数据与隐私说明</text>
       <text class="menu-arrow">›</text>

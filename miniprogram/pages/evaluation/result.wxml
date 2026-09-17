@@ -101,11 +101,17 @@
       <view class="section-title">生成可安装 MOD</view>
       <view wx:if="{{evaluation.modGeneration.supported}}" class="mod-supported">
         <view class="mod-status">该设计在白名单范围内，可以自动生成源码和 MOD 文件。</view>
+        <button class="text-button mod-support-link" bindtap="openModSupport">查看完整可生成范围</button>
+
+        <view wx:if="{{evaluationStale}}" class="mod-stale-banner">
+          设计在评估后已经修改。请先返回编辑页重新评估，再生成新版 MOD。
+          <button class="text-button mod-stale-action" bindtap="editIdea">返回修改并重新评估</button>
+        </view>
 
         <block wx:if="{{!modJob}}">
           <button
             class="primary-button mod-generate-button"
-            disabled="{{generatingMod}}"
+            disabled="{{generatingMod || evaluationStale}}"
             bindtap="generateMod"
           >
             {{generatingMod ? '正在生成...' : '生成 MOD'}}
@@ -113,6 +119,9 @@
         </block>
 
         <block wx:elif="{{modJob.status === 'SUCCEEDED'}}">
+          <view wx:if="{{modJobStale}}" class="mod-stale-banner">
+            当前下载的是旧版本 MOD。重新评估后点击下方按钮生成新版。
+          </view>
           <view class="mod-result">{{modJob.manifest.name}} · {{modJob.manifest.version}}</view>
           <view class="mod-result-meta">
             MOD {{modJob.modZipSize}} bytes · 源码 {{modJob.sourceZipSize}} bytes
@@ -148,6 +157,13 @@
             <button class="secondary-button" bindtap="copyModDownload">复制 MOD 链接</button>
             <button class="secondary-button" bindtap="copySourceDownload">复制源码链接</button>
           </view>
+          <button
+            class="secondary-button mod-generate-button"
+            disabled="{{generatingMod || evaluationStale}}"
+            bindtap="generateMod"
+          >
+            {{generatingMod ? '正在生成...' : '重新生成 MOD'}}
+          </button>
           <button
             class="primary-button mod-generate-button"
             disabled="{{sharingMod}}"

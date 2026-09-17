@@ -55,6 +55,35 @@
   padding: 28rpx;
 }
 
+.mod-announcement {
+  margin-bottom: 20rpx;
+  padding: 26rpx 28rpx;
+}
+
+.mod-announcement-kicker {
+  color: #a63d2f;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.mod-announcement-title {
+  margin-top: 10rpx;
+  color: #28302c;
+  font-size: 31rpx;
+  font-weight: 750;
+}
+
+.mod-announcement-copy {
+  margin-top: 10rpx;
+  color: #666d68;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.mod-announcement-button {
+  margin-top: 20rpx;
+}
+
 .quick-title {
   color: #282e2b;
   font-size: 34rpx;

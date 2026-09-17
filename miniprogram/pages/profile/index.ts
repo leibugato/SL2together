@@ -53,6 +53,12 @@ Page({
     });
   },
 
+  openModSupport() {
+    wx.navigateTo({
+      url: '/pages/mod-support/index',
+    });
+  },
+
   showPrivacy() {
     wx.showModal({
       title: '数据与隐私',

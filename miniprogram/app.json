@@ -7,6 +7,7 @@
     "pages/idea/detail",
     "pages/idea/import",
     "pages/evaluation/result",
+    "pages/mod-support/index",
     "pages/admin/index"
   ],
   "window": {

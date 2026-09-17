@@ -1,0 +1,49 @@
+.mod-support-page {
+  padding-top: 20rpx;
+}
+
+.support-heading {
+  padding: 8rpx 4rpx 12rpx;
+}
+
+.support-section {
+  margin-top: 20rpx;
+  padding: 28rpx;
+}
+
+.support-title {
+  color: #27302c;
+  font-size: 32rpx;
+  font-weight: 750;
+}
+
+.support-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-top: 20rpx;
+  color: #555e59;
+  font-size: 25rpx;
+  line-height: 1.6;
+}
+
+.support-list text {
+  padding-left: 22rpx;
+  border-left: 4rpx solid #7f9b92;
+}
+
+.support-action {
+  margin-top: 24rpx;
+}
+
+.support-limit .support-list text {
+  border-left-color: #c27a54;
+}
+
+.support-note {
+  margin-top: 24rpx;
+  padding: 0 6rpx;
+  color: #707771;
+  font-size: 23rpx;
+  line-height: 1.7;
+}

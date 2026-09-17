@@ -22,6 +22,8 @@ Page({
     generatingMod: false,
     sharingMod: false,
     modJob: null as ModGenerationJob | null,
+    evaluationStale: false,
+    modJobStale: false,
     createdLabel: '',
     dimensions: [] as Array<{
       key: string;
@@ -58,6 +60,9 @@ Page({
         loading: false,
         evaluation: result.evaluation,
         submission: result.submission || null,
+        evaluationStale: Boolean(
+          result.submission && result.evaluation.contentHash !== result.submission.contentHash,
+        ),
         createdLabel: formatDate(result.evaluation.createdAt),
         dimensions: dimensionRows(result.evaluation.dimensions),
       });
@@ -65,7 +70,13 @@ Page({
         getLatestModJob(this.data.submissionId)
           .then((modResult) => {
             if (modResult.job) {
-              this.setData({ modJob: modResult.job });
+              this.setData({
+                modJob: modResult.job,
+                modJobStale: Boolean(
+                  result.submission &&
+                    modResult.job.contentHash !== result.submission.contentHash,
+                ),
+              });
             }
           })
           .catch(() => {});
@@ -90,6 +101,12 @@ Page({
     });
   },
 
+  openModSupport() {
+    wx.navigateTo({
+      url: '/pages/mod-support/index',
+    });
+  },
+
   async confirmSubmit() {
     if (this.data.submitting || this.data.submission?.status === 'SUBMITTED') return;
     this.setData({ submitting: true });
@@ -109,13 +126,22 @@ Page({
   },
 
   async generateMod() {
-    if (this.data.generatingMod || this.data.modJob?.status === 'SUCCEEDED') return;
+    if (this.data.generatingMod) return;
+    if (this.data.evaluationStale) {
+      wx.showModal({
+        title: '设计已修改',
+        content: '请先返回编辑页重新评估，再生成新版 MOD。',
+        showCancel: false,
+      });
+      return;
+    }
     this.setData({ generatingMod: true });
     try {
       const result = await generateMod(this.data.submissionId);
       this.setData({
         generatingMod: false,
         modJob: result.job,
+        modJobStale: false,
       });
       wx.showToast({ title: 'MOD 已生成', icon: 'success' });
     } catch (error) {

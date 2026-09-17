@@ -1,0 +1,59 @@
+<view class="page-stage">
+  <image class="page-wallpaper" src="/images/wallpaper.jpg" mode="aspectFill"></image>
+  <view class="page-shell mod-support-page">
+    <view class="support-heading">
+      <view class="page-title">可生成 MOD 范围</view>
+      <view class="page-subtitle">
+        目前只自动生成白名单内的卡牌、遗物和 Buff。设计修改后需要重新评估，再重新生成 MOD。
+      </view>
+    </view>
+
+    <view class="support-section surface">
+      <view class="support-title">卡牌</view>
+      <view class="support-list">
+        <text>单体或全体伤害、格挡、抽牌、获得能量、治疗</text>
+        <text>施加已知的虚弱、易伤、脆弱、力量、敏捷、中毒、荆棘或活力</text>
+        <text>消耗、虚无、固有、不可打出、保留、奇巧、永恒</text>
+        <text>升级改变伤害、格挡、抽牌或能量数值</text>
+        <text>被消耗后，在自动出牌阶段从消耗堆自动打出</text>
+      </view>
+      <button class="secondary-button support-action" bindtap="createCard">创建设计卡牌</button>
+    </view>
+
+    <view class="support-section surface">
+      <view class="support-title">遗物</view>
+      <view class="support-list">
+        <text>获得遗物时触发</text>
+        <text>战斗开始时获得格挡</text>
+        <text>打出卡牌后触发格挡、抽牌、能量、治疗或已知状态</text>
+        <text>回合结束时触发格挡、抽牌、能量、治疗或已知状态</text>
+      </view>
+      <button class="secondary-button support-action" bindtap="createRelic">创建设计遗物</button>
+    </view>
+
+    <view class="support-section surface">
+      <view class="support-title">Buff</view>
+      <view class="support-list">
+        <text>Buff 或 Debuff，支持层数叠加或单层状态</text>
+        <text>打出卡牌后触发格挡、抽牌、能量、治疗或已知状态</text>
+        <text>回合结束时触发格挡、抽牌、能量、治疗或已知状态</text>
+        <text>自动附带一张测试卡，方便在游戏中快速施加该 Buff</text>
+      </view>
+      <button class="secondary-button support-action" bindtap="createBuff">创建设计 Buff</button>
+    </view>
+
+    <view class="support-section surface support-limit">
+      <view class="support-title">暂不支持自动生成</view>
+      <view class="support-list">
+        <text>复杂选牌界面、多次分支选择和自定义交互</text>
+        <text>任意代码、Harmony 补丁和新系统级机制</text>
+        <text>新角色、新卡池、复杂动画和完整场景</text>
+        <text>依赖多人同步、自定义存档迁移或未确认接口的效果</text>
+      </view>
+    </view>
+
+    <view class="support-note">
+      每个生成的 MOD ZIP 中都包含 QUICK_TEST.md，里面有游戏控制台命令和测试步骤。用户短标识用于区分不同用户的同名设计，不会公开原始 OPENID。
+    </view>
+  </view>
+</view>

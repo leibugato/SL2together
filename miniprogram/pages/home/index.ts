@@ -92,4 +92,10 @@ Page({
       url: '/pages/idea/import',
     });
   },
+
+  openModSupport() {
+    wx.navigateTo({
+      url: '/pages/mod-support/index',
+    });
+  },
 });

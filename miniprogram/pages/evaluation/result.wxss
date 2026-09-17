@@ -233,6 +233,33 @@
   margin-bottom: 22rpx;
 }
 
+.mod-support-link {
+  min-height: 52rpx;
+  margin: -12rpx 0 18rpx;
+  padding: 0;
+  font-size: 23rpx;
+  line-height: 52rpx;
+}
+
+.mod-stale-banner {
+  margin-bottom: 20rpx;
+  padding: 18rpx 20rpx;
+  background: #f8ebdc;
+  border-left: 6rpx solid #b56b38;
+  border-radius: 8rpx;
+  color: #80562d;
+  font-size: 23rpx;
+  line-height: 1.6;
+}
+
+.mod-stale-action {
+  min-height: 52rpx;
+  margin: 8rpx 0 0;
+  padding: 0;
+  font-size: 23rpx;
+  line-height: 52rpx;
+}
+
 .mod-generate-button {
   margin-top: 18rpx;
 }
