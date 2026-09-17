@@ -27,6 +27,18 @@ const POWER_CLASS_MAP = {
   中毒: 'PoisonPower',
   荆棘: 'ThornsPower',
   活力: 'VigorPower',
+  下回合能量: 'EnergyNextTurnPower',
+  下回合费用: 'EnergyNextTurnPower',
+  下回合抽牌: 'DrawCardsNextTurnPower',
+  集中: 'FocusPower',
+  保留手牌: 'RetainHandPower',
+  下回合格挡: 'BlockNextTurnPower',
+  覆甲: 'PlatingPower',
+  无实体: 'IntangiblePower',
+  不可抽牌: 'NoDrawPower',
+  下回合辉星: 'StarNextTurnPower',
+  紧勒: 'StranglePower',
+  灾厄: 'DoomPower',
 };
 
 const KEYWORD_MAP = [
@@ -39,7 +51,7 @@ const KEYWORD_MAP = [
   [/永恒/, 'ETERNAL'],
 ];
 
-const MOD_SPEC_VERSION = 'modspec-v4';
+const MOD_SPEC_VERSION = 'modspec-v5';
 
 const EFFECT_ORDER_PATTERNS = {
   DAMAGE: /造成|攻击/,
@@ -52,6 +64,12 @@ const EFFECT_ORDER_PATTERNS = {
   EXHAUST_CARDS: /选择.*消耗|消耗一张|消耗\s*\d+\s*张/,
   PUT_BACK_CARDS: /放回.*抽牌堆顶|置于抽牌堆顶|放到抽牌堆顶|回到抽牌堆顶/,
   SEARCH_CARD: /检索|搜寻|搜索|查找/,
+  UPGRADE_HAND_CARDS: /升级.*手牌|手牌.*升级/,
+  COPY_THIS_CARD_TO_PILE: /此牌的复制品|这张牌的复制品|复制一张此牌|复制本牌|复制.{0,4}此牌|复制.{0,4}这张牌/,
+  GAIN_MAX_HP: /获得.*最大生命|提高.*最大生命/,
+  LOSE_MAX_HP: /失去.*最大生命/,
+  LOSE_HP: /失去.*生命/,
+  GAIN_GOLD: /获得.*金币|\d+\s*金币/,
 };
 
 function textOf(submission) {
@@ -73,15 +91,25 @@ function detectKeywords(text) {
 function detectPower(text) {
   for (const [label, power] of Object.entries(POWER_CLASS_MAP)) {
     if (!text.includes(label)) continue;
-    const amount = extractNumber(
-      text,
-      new RegExp(`${label}\\s*(\\d+)\\s*(?:层|点)?`),
-      1,
-      20,
+    const match = text.match(
+      new RegExp(`${label}\\s*(\\d+)\\s*(?:层|点)?|(\\d+)\\s*(?:层|点)?\\s*${label}`),
     );
+    const amountValue = Number(match?.[1] || match?.[2] || 1);
+    const amount = Number.isFinite(amountValue)
+      ? Math.max(1, Math.min(20, Math.floor(amountValue)))
+      : 1;
     return { power, amount };
   }
   return null;
+}
+
+function detectHitCount(text) {
+  if (/两次|2次/.test(text)) return 2;
+  if (/三次|3次/.test(text)) return 3;
+  const match = text.match(/(\d+)\s*次/);
+  if (!match) return null;
+  const value = Number(match[1]);
+  return Number.isFinite(value) && value >= 2 ? Math.min(10, Math.floor(value)) : null;
 }
 
 function normalizeCardType(value, text) {
@@ -144,6 +172,7 @@ function buildCardSpec(submission) {
         type: 'DAMAGE',
         amount: extractNumber(text, /造成\s*(\d+)\s*点?伤害/, 6, 99),
         target: /所有敌人|全体敌人/.test(text) ? 'ALL_ENEMIES' : 'CARD_TARGET',
+        ...(detectHitCount(text) ? { hitCount: detectHitCount(text) } : {}),
       }
     : null;
   if (damage) effects.push(damage);
@@ -251,13 +280,66 @@ function buildCardSpec(submission) {
     });
   }
 
+  if (/升级.*手牌|手牌.*升级/.test(text)) {
+    effects.push({
+      type: 'UPGRADE_HAND_CARDS',
+      count: extractNumber(text, /升级\s*(\d+)\s*张/, 1, 3),
+      filter: /攻击牌/.test(text)
+        ? 'ATTACK'
+        : /技能牌/.test(text)
+          ? 'SKILL'
+          : /能力牌/.test(text)
+            ? 'POWER'
+            : 'ANY',
+    });
+  }
+
+  if (/此牌的复制品|这张牌的复制品|复制一张此牌|复制本牌|复制.{0,4}此牌|复制.{0,4}这张牌/.test(text)) {
+    effects.push({
+      type: 'COPY_THIS_CARD_TO_PILE',
+      count: extractNumber(text, /复制\s*(\d+)\s*张/, 1, 3),
+      destination: /弃牌堆/.test(text)
+        ? 'DISCARD'
+        : /抽牌堆顶/.test(text)
+          ? 'DRAW_TOP'
+          : 'HAND',
+    });
+  }
+
+  if (/获得.*最大生命|提高.*最大生命/.test(text)) {
+    effects.push({
+      type: 'GAIN_MAX_HP',
+      amount: extractNumber(text, /(\d+)\s*点?(?:最大生命|生命上限)/, 1, 999),
+    });
+  }
+  if (/失去.*最大生命/.test(text)) {
+    effects.push({
+      type: 'LOSE_MAX_HP',
+      amount: extractNumber(text, /(\d+)\s*点?(?:最大生命|生命上限)/, 1, 999),
+    });
+  } else if (/失去.*生命/.test(text)) {
+    effects.push({
+      type: 'LOSE_HP',
+      amount: extractNumber(text, /失去\s*(\d+)\s*点?生命/, 1, 999),
+    });
+  }
+  if (/获得.*金币|\d+\s*金币/.test(text)) {
+    effects.push({
+      type: 'GAIN_GOLD',
+      amount: extractNumber(text, /(\d+)\s*金币/, 1, 999),
+    });
+  }
+
   const power = detectPower(text);
   if (power) {
+    const targetsEnemy = /给予|使.{0,8}(?:敌人|目标)|敌人.{0,8}获得/.test(text);
+    const targetsOwner = /获得|自己|玩家|我方/.test(text);
+    const target = targetsEnemy && !targetsOwner ? 'CARD_TARGET' : 'OWNER';
     effects.push({
       type: 'APPLY_POWER',
       power: power.power,
       amount: power.amount,
-      target: /敌方|敌人|目标/.test(text) ? 'CARD_TARGET' : 'OWNER',
+      target,
     });
   }
 

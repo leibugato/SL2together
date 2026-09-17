@@ -64,13 +64,13 @@ Page({
         evaluationStale: Boolean(
           result.submission && result.evaluation.contentHash !== result.submission.contentHash,
         ),
-        modGenerationCurrent: result.evaluation.modGeneration?.version === 'modspec-v4',
+        modGenerationCurrent: result.evaluation.modGeneration?.version === 'modspec-v5',
         createdLabel: formatDate(result.evaluation.createdAt),
         dimensions: dimensionRows(result.evaluation.dimensions),
       });
       if (
         result.evaluation.modGeneration?.supported &&
-        result.evaluation.modGeneration?.version === 'modspec-v4'
+        result.evaluation.modGeneration?.version === 'modspec-v5'
       ) {
         getLatestModJob(this.data.submissionId)
           .then((modResult) => {

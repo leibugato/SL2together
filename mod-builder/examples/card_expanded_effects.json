@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "mod": {
+    "id": "sl2t_expanded_effects",
+    "name": "扩展效果演示",
+    "author": "SL2Together",
+    "description": "验证多段伤害、升级手牌、复制本牌、生命和金币。",
+    "version": "1.0.0"
+  },
+  "content": {
+    "kind": "CARD",
+    "id": "EXPANDED_TACTICS",
+    "name": "综合战术",
+    "description": "造成6点伤害两次。升级一张手牌。复制一份此牌到弃牌堆。获得2点最大生命。失去1点生命。获得5金币。给予3层灾厄。",
+    "card": {
+      "cost": 2,
+      "type": "Attack",
+      "target": "AnyEnemy",
+      "rarity": "Rare",
+      "pool": "ColorlessCardPool",
+      "keywords": [],
+      "effects": [
+        {
+          "type": "DAMAGE",
+          "amount": 6,
+          "hitCount": 2,
+          "target": "CARD_TARGET"
+        },
+        {
+          "type": "UPGRADE_HAND_CARDS",
+          "count": 1,
+          "filter": "ANY"
+        },
+        {
+          "type": "COPY_THIS_CARD_TO_PILE",
+          "count": 1,
+          "destination": "DISCARD"
+        },
+        {
+          "type": "GAIN_MAX_HP",
+          "amount": 2
+        },
+        {
+          "type": "LOSE_HP",
+          "amount": 1
+        },
+        {
+          "type": "GAIN_GOLD",
+          "amount": 5
+        },
+        {
+          "type": "APPLY_POWER",
+          "power": "DoomPower",
+          "amount": 3,
+          "target": "CARD_TARGET"
+        }
+      ]
+    }
+  }
+}

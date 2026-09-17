@@ -27,6 +27,8 @@ def _card_dynamic_vars(card: dict) -> list[str]:
             "EXHAUST_CARDS",
             "PUT_BACK_CARDS",
             "DISCARD_AND_DRAW",
+            "UPGRADE_HAND_CARDS",
+            "COPY_THIS_CARD_TO_PILE",
         }:
             continue
         amount = effect["amount"]
@@ -42,6 +44,14 @@ def _card_dynamic_vars(card: dict) -> list[str]:
             values.append(f"new HealVar({amount}m)")
         elif effect_type == "APPLY_POWER":
             values.append(f'new PowerVar<{effect["power"]}>({effect["amount"]}m)')
+        elif effect_type == "GAIN_MAX_HP":
+            values.append(f"new MaxHpVar({amount}m)")
+        elif effect_type == "LOSE_MAX_HP":
+            values.append(f"new MaxHpVar({amount}m)")
+        elif effect_type == "LOSE_HP":
+            values.append(f"new HpLossVar({amount}m)")
+        elif effect_type == "GAIN_GOLD":
+            values.append(f"new GoldVar({amount})")
     return values
 
 
@@ -54,11 +64,25 @@ def _card_filter_expression(filter_name: str) -> str:
     }[filter_name]
 
 
+def _upgrade_filter_expression(filter_name: str) -> str:
+    return {
+        "ANY": "(CardModel card) => card.IsUpgradable",
+        "ATTACK": "(CardModel card) => card.IsUpgradable && card.Type == CardType.Attack",
+        "SKILL": "(CardModel card) => card.IsUpgradable && card.Type == CardType.Skill",
+        "POWER": "(CardModel card) => card.IsUpgradable && card.Type == CardType.Power",
+    }[filter_name]
+
+
 def _card_effect_lines(effects: list[dict]) -> list[str]:
     lines: list[str] = []
     for effect in effects:
         effect_type = effect["type"]
         if effect_type == "DAMAGE":
+            hit_count_lines = (
+                [f"            .WithHitCount({effect['hitCount']})"]
+                if effect.get("hitCount")
+                else []
+            )
             if effect.get("target", "CARD_TARGET") == "CARD_TARGET":
                 lines.append('        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");')
                 lines.extend(
@@ -66,6 +90,7 @@ def _card_effect_lines(effects: list[dict]) -> list[str]:
                         "        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)",
                         "            .FromCard(this, cardPlay)",
                         "            .Targeting(cardPlay.Target)",
+                        *hit_count_lines,
                         '            .WithHitFx("vfx/vfx_attack_slash")',
                         "            .Execute(choiceContext);",
                     ]
@@ -76,6 +101,7 @@ def _card_effect_lines(effects: list[dict]) -> list[str]:
                         "        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)",
                         "            .FromCard(this, cardPlay)",
                         "            .TargetingAllOpponents(base.CombatState)",
+                        *hit_count_lines,
                         '            .WithHitFx("vfx/vfx_attack_slash")',
                         "            .Execute(choiceContext);",
                     ]
@@ -195,6 +221,57 @@ def _card_effect_lines(effects: list[dict]) -> list[str]:
                     f"        await CardCmd.DiscardAndDraw(choiceContext, discardDrawCards, {effect.get('drawCount', 1)});",
                 ]
             )
+        elif effect_type == "UPGRADE_HAND_CARDS":
+            filter_expression = _upgrade_filter_expression(effect.get("filter", "ANY"))
+            lines.extend(
+                [
+                    "        IEnumerable<CardModel> upgradedCards = await CardSelectCmd.FromHand(",
+                    "            choiceContext,",
+                    "            base.Owner,",
+                    f"            new CardSelectorPrefs(base.SelectionScreenPrompt, {effect.get('count', 1)}),",
+                    f"            {filter_expression},",
+                    "            this);",
+                    "        foreach (CardModel upgradedCard in upgradedCards)",
+                    "        {",
+                    "            CardCmd.Upgrade(upgradedCard);",
+                    "        }",
+                ]
+            )
+        elif effect_type == "COPY_THIS_CARD_TO_PILE":
+            destination = effect.get("destination", "DISCARD")
+            destination_expression = {
+                "HAND": "PileType.Hand",
+                "DISCARD": "PileType.Discard",
+                "DRAW_TOP": "PileType.Draw",
+            }[destination]
+            add_suffix = ", CardPilePosition.Top" if destination == "DRAW_TOP" else ""
+            lines.extend(
+                [
+                    f"        for (int copyIndex = 0; copyIndex < {effect.get('count', 1)}; copyIndex++)",
+                    "        {",
+                    "            CardModel copiedCard = CreateClone();",
+                    "            await CardPileCmd.AddGeneratedCardToCombat("
+                    f"copiedCard, {destination_expression}, base.Owner{add_suffix});",
+                    "        }",
+                ]
+            )
+        elif effect_type == "GAIN_MAX_HP":
+            lines.append(
+                "        await CreatureCmd.GainMaxHp(base.Owner.Creature, base.DynamicVars.MaxHp.BaseValue);"
+            )
+        elif effect_type == "LOSE_MAX_HP":
+            lines.append(
+                "        await CreatureCmd.LoseMaxHp(choiceContext, base.Owner.Creature, "
+                "base.DynamicVars.MaxHp.BaseValue, isFromCard: true);"
+            )
+        elif effect_type == "LOSE_HP":
+            lines.append(
+                "        await CreatureCmd.Damage(choiceContext, base.Owner.Creature, "
+                "base.DynamicVars.HpLoss.BaseValue, "
+                "ValueProp.Unblockable | ValueProp.Unpowered | ValueProp.Move, this, cardPlay);"
+            )
+        elif effect_type == "GAIN_GOLD":
+            lines.append("        await PlayerCmd.GainGold(base.DynamicVars.Gold.IntValue, base.Owner);")
     return lines
 
 
@@ -679,7 +756,7 @@ def generate_project(spec: dict, output_dir: Path) -> Path:
             f"{content['id']}.description": content["description"],
         }
         if any(
-            effect["type"] in {"SEARCH_CARD", "PUT_BACK_CARDS"}
+            effect["type"] in {"SEARCH_CARD", "PUT_BACK_CARDS", "UPGRADE_HAND_CARDS"}
             for effect in card["effects"]
         ):
             localizations["cards"][f"{content['id']}.selectionScreenPrompt"] = "选择要处理的卡牌。"

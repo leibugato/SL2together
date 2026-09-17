@@ -24,6 +24,7 @@ class GeneratorTests(unittest.TestCase):
             "card_search.json",
             "card_pile_actions.json",
             "card_discard_energy.json",
+            "card_expanded_effects.json",
             "relic_block.json",
             "power_ward.json",
         ):
@@ -125,6 +126,41 @@ class GeneratorTests(unittest.TestCase):
             self.assertIn("CardCmd.DiscardAndDraw", code)
             self.assertIn("CardCmd.Exhaust", code)
             self.assertIn("CardPileCmd.Add(putBackCards, PileType.Draw", code)
+
+    def test_generates_expanded_effects(self) -> None:
+        spec = self.load("card_expanded_effects.json")
+        with tempfile.TemporaryDirectory() as directory:
+            project = generate_project(spec, Path(directory) / "mod")
+            code = (
+                project / "src" / "Core" / "Models" / "Cards" / "ExpandedTactics.cs"
+            ).read_text(encoding="utf-8")
+            self.assertIn(".WithHitCount(2)", code)
+            self.assertIn("CardCmd.Upgrade", code)
+            self.assertIn("CreateClone", code)
+            self.assertIn("CreatureCmd.GainMaxHp", code)
+            self.assertIn("CreatureCmd.Damage", code)
+            self.assertIn("DynamicVars.HpLoss", code)
+            self.assertIn("PlayerCmd.GainGold", code)
+            self.assertIn("PowerCmd.Apply<DoomPower>", code)
+
+            lose_max_hp = deepcopy(spec)
+            lose_max_hp["content"]["id"] = "LOSE_MAX_HP_TEST"
+            lose_max_hp["content"]["card"]["effects"] = [
+                {
+                    "type": "LOSE_MAX_HP",
+                    "amount": 2,
+                }
+            ]
+            lose_project = generate_project(lose_max_hp, Path(directory) / "lose-max-hp")
+            lose_code = (
+                lose_project
+                / "src"
+                / "Core"
+                / "Models"
+                / "Cards"
+                / "LoseMaxHpTest.cs"
+            ).read_text(encoding="utf-8")
+            self.assertIn("CreatureCmd.LoseMaxHp", lose_code)
 
 
 if __name__ == "__main__":

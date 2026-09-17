@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const MOD_SPEC_VERSION = 'modspec-v4';
+const MOD_SPEC_VERSION = 'modspec-v5';
 
 const IDEA_TYPES = [
   'CARD',

@@ -57,6 +57,17 @@ SUPPORTED_POWERS = {
     "PoisonPower",
     "ThornsPower",
     "VigorPower",
+    "EnergyNextTurnPower",
+    "DrawCardsNextTurnPower",
+    "FocusPower",
+    "RetainHandPower",
+    "BlockNextTurnPower",
+    "PlatingPower",
+    "IntangiblePower",
+    "NoDrawPower",
+    "StarNextTurnPower",
+    "StranglePower",
+    "DoomPower",
 }
 
 EFFECTS = {
@@ -71,6 +82,12 @@ EFFECTS = {
     "EXHAUST_CARDS",
     "PUT_BACK_CARDS",
     "DISCARD_AND_DRAW",
+    "UPGRADE_HAND_CARDS",
+    "COPY_THIS_CARD_TO_PILE",
+    "GAIN_MAX_HP",
+    "LOSE_MAX_HP",
+    "LOSE_HP",
+    "GAIN_GOLD",
 }
 
 NON_CARD_EFFECTS = {
@@ -186,11 +203,36 @@ def _validate_effect(effect: dict, kind: str, index: int) -> None:
         _positive_int(effect.get("drawCount", 1), f"effects[{index}].drawCount", 5)
         return
 
+    if effect_type == "UPGRADE_HAND_CARDS":
+        _require(kind == "CARD", "UPGRADE_HAND_CARDS 第一版只允许卡牌使用。")
+        _require(
+            effect.get("filter", "ANY") in {"ANY", "ATTACK", "SKILL", "POWER"},
+            "UPGRADE_HAND_CARDS 过滤条件只能是 ANY、ATTACK、SKILL 或 POWER。",
+        )
+        _positive_int(effect.get("count", 1), f"effects[{index}].count", 3)
+        return
+
+    if effect_type == "COPY_THIS_CARD_TO_PILE":
+        _require(kind == "CARD", "COPY_THIS_CARD_TO_PILE 第一版只允许卡牌使用。")
+        _require(
+            effect.get("destination", "DISCARD") in {"HAND", "DISCARD", "DRAW_TOP"},
+            "COPY_THIS_CARD_TO_PILE 去向只能是 HAND、DISCARD 或 DRAW_TOP。",
+        )
+        _positive_int(effect.get("count", 1), f"effects[{index}].count", 3)
+        return
+
+    if effect_type in {"GAIN_MAX_HP", "LOSE_MAX_HP", "LOSE_HP", "GAIN_GOLD"}:
+        _require(kind == "CARD", f"{effect_type} 第一版只允许卡牌使用。")
+        _positive_int(effect.get("amount"), f"effects[{index}].amount", 999)
+        return
+
     if effect_type == "DAMAGE":
         _require(kind == "CARD", "第一版只允许卡牌直接造成伤害。")
         target = effect.get("target", "CARD_TARGET")
         _require(target in {"CARD_TARGET", "ALL_ENEMIES"}, "DAMAGE 目标只能是 CARD_TARGET 或 ALL_ENEMIES。")
         _positive_int(effect.get("amount"), f"effects[{index}].amount", 999)
+        if effect.get("hitCount") is not None:
+            _positive_int(effect["hitCount"], f"effects[{index}].hitCount", 10)
     elif effect_type in {"GAIN_BLOCK", "HEAL"}:
         if kind == "POWER":
             return

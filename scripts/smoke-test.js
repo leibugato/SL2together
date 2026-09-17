@@ -167,7 +167,7 @@ const generatedCard = buildRuleModSpec(
   }),
 );
 assert.equal(generatedCard.supported, true);
-assert.equal(generatedCard.version, 'modspec-v4');
+assert.equal(generatedCard.version, 'modspec-v5');
 assert.match(generatedCard.spec.mod.id, /^sl2t_a1b2c3d4_/);
 assert.ok(generatedCard.spec.mod.name.includes('A1B2C3D4'));
 assert.ok(generatedCard.spec.mod.name.includes('飞刀连击'));
@@ -226,6 +226,38 @@ assert.ok(
 assert.ok(
   generatedDiscardEnergy.spec.content.card.effects.some(
     (effect) => effect.type === 'GAIN_ENERGY' && effect.amount === 2,
+  ),
+);
+
+const generatedExpanded = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_expanded',
+    ownerTag: 'A1B2C3D4',
+    type: 'CARD',
+    designText:
+      '造成6点伤害两次。升级一张手牌。复制一份此牌到弃牌堆。获得2点最大生命。失去1点生命。获得5金币。给予3层灾厄。',
+    extra: { cost: 2, cardType: '攻击', rarity: '稀有' },
+  }),
+);
+assert.equal(generatedExpanded.supported, true);
+assert.ok(
+  generatedExpanded.spec.content.card.effects.some(
+    (effect) => effect.type === 'DAMAGE' && effect.hitCount === 2,
+  ),
+);
+assert.ok(
+  generatedExpanded.spec.content.card.effects.some(
+    (effect) => effect.type === 'UPGRADE_HAND_CARDS',
+  ),
+);
+assert.ok(
+  generatedExpanded.spec.content.card.effects.some(
+    (effect) => effect.type === 'COPY_THIS_CARD_TO_PILE',
+  ),
+);
+assert.ok(
+  generatedExpanded.spec.content.card.effects.some(
+    (effect) => effect.type === 'APPLY_POWER' && effect.power === 'DoomPower',
   ),
 );
 
