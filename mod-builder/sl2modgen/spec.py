@@ -143,6 +143,14 @@ def pascal_case(identifier: str) -> str:
     return value
 
 
+def class_name_for_id(identifier: str) -> str:
+    value = str(identifier).strip()
+    _require(bool(value), "内容 ID 不能为空。")
+    value = value[:1].upper() + value[1:].lower()
+    _require(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value) is not None, "内容 ID 无法生成有效 C# 类名。")
+    return value
+
+
 def namespace_for(mod_id: str) -> str:
     value = re.sub(r"[^A-Za-z0-9_]", "_", mod_id)
     if not value or value[0].isdigit():

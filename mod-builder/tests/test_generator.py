@@ -52,8 +52,8 @@ class GeneratorTests(unittest.TestCase):
                 'project/assembly_name="sl2t_burning_card"',
                 (project / "project.godot").read_text(encoding="utf-8"),
             )
-            self.assertTrue((project / "src" / "Core" / "Models" / "Cards" / "BurningStrike.cs").exists())
-            card_code = (project / "src" / "Core" / "Models" / "Cards" / "BurningStrike.cs").read_text(encoding="utf-8")
+            self.assertTrue((project / "src" / "Core" / "Models" / "Cards" / "Burning_strike.cs").exists())
+            card_code = (project / "src" / "Core" / "Models" / "Cards" / "Burning_strike.cs").read_text(encoding="utf-8")
             self.assertIn("CardKeyword.Exhaust", card_code)
             self.assertIn("AfterAutoPrePlayPhaseEnteredEarly", card_code)
 
@@ -72,21 +72,21 @@ class GeneratorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             relic_project = generate_project(self.load("relic_block.json"), root / "relic")
-            relic_code = (relic_project / "src" / "Core" / "Models" / "Cards" / "FirstGuard.cs").read_text(
+            relic_code = (relic_project / "src" / "Core" / "Models" / "Cards" / "First_guard.cs").read_text(
                 encoding="utf-8"
             )
             self.assertIn("BeforeCombatStart", relic_code)
             self.assertIn("RelicRarity.Common", relic_code)
 
             power_project = generate_project(self.load("power_ward.json"), root / "power")
-            power_code = (power_project / "src" / "Core" / "Models" / "Cards" / "WardPower.cs").read_text(
+            power_code = (power_project / "src" / "Core" / "Models" / "Cards" / "Ward_power.cs").read_text(
                 encoding="utf-8"
             )
             test_card_code = (
-                power_project / "src" / "Core" / "Models" / "Cards" / "WardPowerTestCard.cs"
+                power_project / "src" / "Core" / "Models" / "Cards" / "Ward_power_test_card.cs"
             ).read_text(encoding="utf-8")
             self.assertIn("PowerStackType.Counter", power_code)
-            self.assertIn("PowerCmd.Apply<WardPower>", test_card_code)
+            self.assertIn("PowerCmd.Apply<Ward_power>", test_card_code)
 
     def test_builds_console_test_guide(self) -> None:
         card = build_test_guide(self.load("card_burning.json"))
@@ -103,7 +103,7 @@ class GeneratorTests(unittest.TestCase):
         spec = self.load("card_search.json")
         with tempfile.TemporaryDirectory() as directory:
             project = generate_project(spec, Path(directory) / "mod")
-            card_code = (project / "src" / "Core" / "Models" / "Cards" / "RecoverStrike.cs").read_text(
+            card_code = (project / "src" / "Core" / "Models" / "Cards" / "Recover_strike.cs").read_text(
                 encoding="utf-8"
             )
             self.assertIn("CardSelectCmd.FromCombatPile", card_code)
@@ -120,7 +120,7 @@ class GeneratorTests(unittest.TestCase):
         spec = self.load("card_pile_actions.json")
         with tempfile.TemporaryDirectory() as directory:
             project = generate_project(spec, Path(directory) / "mod")
-            code = (project / "src" / "Core" / "Models" / "Cards" / "PileTactics.cs").read_text(
+            code = (project / "src" / "Core" / "Models" / "Cards" / "Pile_tactics.cs").read_text(
                 encoding="utf-8"
             )
             self.assertIn("CardCmd.DiscardAndDraw", code)
@@ -132,7 +132,7 @@ class GeneratorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             project = generate_project(spec, Path(directory) / "mod")
             code = (
-                project / "src" / "Core" / "Models" / "Cards" / "ExpandedTactics.cs"
+                project / "src" / "Core" / "Models" / "Cards" / "Expanded_tactics.cs"
             ).read_text(encoding="utf-8")
             self.assertIn(".WithHitCount(2)", code)
             self.assertIn("CardCmd.Upgrade", code)
@@ -158,7 +158,7 @@ class GeneratorTests(unittest.TestCase):
                 / "Core"
                 / "Models"
                 / "Cards"
-                / "LoseMaxHpTest.cs"
+                / "Lose_max_hp_test.cs"
             ).read_text(encoding="utf-8")
             self.assertIn("CreatureCmd.LoseMaxHp", lose_code)
 

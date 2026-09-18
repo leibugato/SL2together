@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from .assets import generate_card_assets, generate_power_assets, generate_relic_assets
-from .spec import namespace_for, pascal_case, validate_mod_spec
+from .spec import class_name_for_id, namespace_for, validate_mod_spec
 
 
 def _write(path: Path, text: str) -> None:
@@ -277,7 +277,7 @@ def _card_effect_lines(effects: list[dict]) -> list[str]:
 
 def render_card(namespace: str, content: dict) -> str:
     card = content["card"]
-    class_name = pascal_case(content["id"])
+    class_name = class_name_for_id(content["id"])
     keywords = card.get("keywords", [])
     dynamic_vars = _card_dynamic_vars(card)
     effect_lines = _card_effect_lines(card["effects"])
@@ -398,7 +398,7 @@ def _relic_effect_lines(effects: list[dict], context_name: str = "context") -> l
 
 def render_relic(namespace: str, content: dict) -> tuple[str, list[str], str]:
     relic = content["relic"]
-    class_name = pascal_case(content["id"])
+    class_name = class_name_for_id(content["id"])
     methods: list[str] = []
     for trigger in relic["triggers"]:
         trigger_type = trigger["type"]
@@ -510,7 +510,7 @@ def _power_effect_lines(effects: list[dict], context_name: str = "context") -> l
 
 def render_power(namespace: str, content: dict) -> tuple[str, str, str]:
     power = content["power"]
-    class_name = pascal_case(content["id"])
+    class_name = class_name_for_id(content["id"])
     methods: list[str] = []
     for trigger in power["triggers"]:
         effects = _power_effect_lines(trigger["effects"])
@@ -576,7 +576,8 @@ def render_power(namespace: str, content: dict) -> tuple[str, str, str]:
         ]
     )
 
-    test_card_name = f"{class_name}TestCard"
+    test_card_id = f"{content['id']}_TEST_CARD"
+    test_card_name = class_name_for_id(test_card_id)
     test_card = "\n".join(
         [
             "#nullable enable",
@@ -742,7 +743,7 @@ def generate_project(spec: dict, output_dir: Path) -> Path:
     namespace = normalized["mod"]["namespace"]
     content = normalized["content"]
     kind = content["kind"]
-    class_name = pascal_case(content["id"])
+    class_name = class_name_for_id(content["id"])
     registrations: list[tuple[str, str]] = []
     localizations: dict[str, dict[str, str]] = {}
 
@@ -772,12 +773,13 @@ def generate_project(spec: dict, output_dir: Path) -> Path:
         }
     else:
         code, test_card, class_name = render_power(namespace, content)
+        test_card_name = class_name_for_id(f"{content['id']}_TEST_CARD")
         _write(project / "src" / "Core" / "Models" / "Cards" / f"{class_name}.cs", code)
         _write(
-            project / "src" / "Core" / "Models" / "Cards" / f"{class_name}TestCard.cs",
+            project / "src" / "Core" / "Models" / "Cards" / f"{test_card_name}.cs",
             test_card,
         )
-        registrations.append(("TokenCardPool", f"{class_name}TestCard"))
+        registrations.append(("TokenCardPool", test_card_name))
         generate_power_assets(project, content)
         localizations["powers"] = {
             f"{content['id']}.title": content["name"],
