@@ -69,7 +69,23 @@
 
       <view wx:for="{{extraFields}}" wx:key="key" class="form-field">
         <text class="field-label">{{item.label}}</text>
+        <block wx:if="{{item.options}}">
+          <view class="type-select-grid extra-option-grid">
+            <button
+              wx:for="{{item.options}}"
+              wx:for-item="option"
+              wx:key="value"
+              class="type-select-item extra-option-item {{form.extra[item.key] === option.value ? 'type-select-active' : ''}}"
+              data-key="{{item.key}}"
+              data-value="{{option.value}}"
+              bindtap="selectExtraOption"
+            >
+              {{option.label}}
+            </button>
+          </view>
+        </block>
         <input
+          wx:else
           class="text-input"
           type="{{item.type || 'text'}}"
           value="{{form.extra[item.key]}}"
@@ -78,6 +94,7 @@
           data-key="{{item.key}}"
           bindinput="onExtraInput"
         />
+        <text wx:if="{{item.help}}" class="field-help">{{item.help}}</text>
       </view>
     </view>
 

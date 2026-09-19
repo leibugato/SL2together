@@ -41,6 +41,7 @@ function buildPrompt(submission, ruleResult, catalogVersion, knowledgeSnippets =
     'dimensions 必须包含 apiFit(0-25)、logicComplexity(0-20)、integrationScope(0-15)、visualAssets(0-15)、compatibility(0-15)、versionStability(0-10)。',
     'dimensions 是难度贡献值，越高表示改动量、逻辑量或风险越大，不是实现质量评分。',
     '不要因为效果“全局生效”或看起来很强就抬高分数；已有触发钩子、统一遍历目标和现有命令能够完成时，应按改动较小的方案评估。',
+    '如果设计已明确角色卡池或遗物获取池，应按所选池评估注册和获取链路，不能默认全部使用无色池或事件遗物池。',
     `知识库版本：${catalogVersion}`,
     `规则预判：${JSON.stringify(compactRuleResult)}`,
     `相关知识片段：${JSON.stringify(knowledgeSnippets)}`,

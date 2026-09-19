@@ -35,6 +35,17 @@
   color: #fffaf3;
 }
 
+.extra-option-grid {
+  margin-top: 2rpx;
+}
+
+.extra-option-item {
+  min-height: 68rpx;
+  padding: 0 12rpx;
+  font-size: 23rpx;
+  line-height: 68rpx;
+}
+
 .extra-section {
   padding-top: 26rpx;
   border-top: 1rpx solid #d6d0c4;

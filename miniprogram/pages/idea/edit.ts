@@ -4,10 +4,43 @@ import { runEvaluation } from '../../services/evaluation';
 import { IDEA_TYPES, TYPE_EXTRA_FIELDS, type IdeaType } from '../../types/domain';
 import { validateIdeaForm, type IdeaForm } from '../../utils/validation';
 
+const EXTRA_VALUE_ALIASES: Record<string, Record<string, string>> = {
+  cardPool: {
+    无色: 'ColorlessCardPool',
+    铁甲战士: 'IroncladCardPool',
+    静默猎手: 'SilentCardPool',
+    故障机器人: 'DefectCardPool',
+    储君: 'RegentCardPool',
+    缚骨者: 'NecrobinderCardPool',
+  },
+  acquisition: {
+    商店: 'SharedRelicPool',
+    战斗: 'SharedRelicPool',
+    精英: 'SharedRelicPool',
+    宝箱: 'SharedRelicPool',
+    事件: 'EventRelicPool',
+    先古: 'EventRelicPool',
+    铁甲战士: 'IroncladRelicPool',
+    静默猎手: 'SilentRelicPool',
+    故障机器人: 'DefectRelicPool',
+    储君: 'RegentRelicPool',
+    缚骨者: 'NecrobinderRelicPool',
+  },
+};
+
 function buildExtra(type: IdeaType, source: Record<string, unknown> = {}) {
   return TYPE_EXTRA_FIELDS[type].reduce(
     (result, field) => {
       const value = source[field.key];
+      if (field.options?.length) {
+        const text = String(value ?? '').trim();
+        const normalized = EXTRA_VALUE_ALIASES[field.key]?.[text] || text;
+        const option =
+          field.options.find((item) => item.value === normalized || item.label === normalized) ||
+          field.options[0];
+        result[field.key] = option ? option.value : text;
+        return result;
+      }
       result[field.key] =
         typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
           ? value
@@ -120,6 +153,15 @@ Page({
     if (!key) return;
     this.setData({
       [`form.extra.${key}`]: event.detail.value,
+    });
+  },
+
+  selectExtraOption(event: WechatMiniprogram.TouchEvent) {
+    const key = String(event.currentTarget.dataset.key || '');
+    const value = String(event.currentTarget.dataset.value || '');
+    if (!key || !value) return;
+    this.setData({
+      [`form.extra.${key}`]: value,
     });
   },
 

@@ -14,7 +14,7 @@
     "description": "每打出一张牌，所有敌人失去2点生命值。",
     "relic": {
       "rarity": "Uncommon",
-      "pool": "EventRelicPool",
+      "pool": "SharedRelicPool",
       "triggers": [
         {
           "type": "AFTER_CARD_PLAYED",

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "mod": {
+    "id": "sl2t_ironclad_card",
+    "name": "铁甲战士卡牌演示",
+    "author": "SL2Together",
+    "description": "验证卡牌注册到铁甲战士角色卡池。",
+    "version": "1.0.0"
+  },
+  "content": {
+    "kind": "CARD",
+    "id": "IRONCLAD_STRIKE_DEMO",
+    "name": "铁甲演示打击",
+    "description": "造成{Damage:diff()}点伤害。",
+    "card": {
+      "cost": 1,
+      "type": "Attack",
+      "target": "AnyEnemy",
+      "rarity": "Common",
+      "pool": "IroncladCardPool",
+      "keywords": [],
+      "effects": [
+        {
+          "type": "DAMAGE",
+          "amount": 6,
+          "target": "CARD_TARGET",
+          "upgradeDelta": 3
+        }
+      ],
+      "behaviors": []
+    }
+  }
+}

@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "mod": {
-    "id": "sl2t_block_relic",
-    "name": "格挡遗物演示",
+    "id": "sl2t_ironclad_relic",
+    "name": "铁甲战士遗物演示",
     "author": "SL2Together",
-    "description": "验证遗物触发和格挡效果。",
+    "description": "验证遗物注册到铁甲战士专属遗物池。",
     "version": "1.0.0"
   },
   "content": {
     "kind": "RELIC",
-    "id": "FIRST_GUARD",
-    "name": "第一道防线",
+    "id": "IRONCLAD_GUARD_DEMO",
+    "name": "铁甲演示护符",
     "description": "战斗开始时获得5点格挡。",
     "relic": {
-      "rarity": "Common",
-      "pool": "SharedRelicPool",
+      "rarity": "Uncommon",
+      "pool": "IroncladRelicPool",
       "triggers": [
         {
           "type": "BEFORE_COMBAT_START",

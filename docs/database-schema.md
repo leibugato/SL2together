@@ -23,7 +23,7 @@
 | `name` | string | 1 至 60 字符 |
 | `designText` | string | 15 至 5000 字符 |
 | `resourceUrl` | string | 可选 HTTP(S) 链接 |
-| `extra` | object | 按类型保存的补充字段 |
+| `extra` | object | 按类型保存的补充字段；卡牌可用 `cardPool`，遗物用 `acquisition` 保存获取池 |
 | `status` | string | 设计生命周期：`DRAFT`、`SUBMITTED`、`DELETED` |
 | `evaluationStatus` | string | 评估状态：`NOT_EVALUATED`、`QUEUED`、`RUNNING`、`RETRYING`、`SUCCEEDED`、`FAILED` |
 | `contentVersion` | number | 内容版本，实质性修改后加一 |
@@ -45,6 +45,15 @@
 2. 将原状态映射为新 `evaluationStatus`：
    `EVALUATING -> RUNNING`、`EVALUATED -> SUCCEEDED`、`EVALUATION_FAILED -> FAILED`。
 3. 新记录由云函数自动写入 `evaluationStatus`。
+
+卡牌获取池和遗物获取池迁移：
+
+1. 旧卡牌没有 `extra.cardPool` 时继续按 `ColorlessCardPool` 处理。
+2. 新卡牌可写入 `extra.cardPool`，允许无色池或五个角色卡池。
+3. 旧遗物的 `extra.acquisition` 如果是“商店”“战斗”“精英”等文本，生成时映射到 `SharedRelicPool`。
+4. 旧遗物的“事件”或“先古”文本映射到 `EventRelicPool`，但仍需配套事件内容才能自然获得。
+5. 新遗物建议写入稳定池值，例如 `SharedRelicPool`、`IroncladRelicPool` 等；`Shop` 稀有度进入商店遗物槽。
+6. 旧评估使用 `modspec-v6` 或更早版本，修改获取池后必须重新评估和重新生成 MOD。
 
 ## share_codes
 

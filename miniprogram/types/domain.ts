@@ -45,6 +45,8 @@ export interface ExtraField {
   label: string;
   placeholder: string;
   type?: 'text' | 'number';
+  options?: Array<{ value: string; label: string }>;
+  help?: string;
 }
 
 export const TYPE_EXTRA_FIELDS: Record<IdeaType, ExtraField[]> = {
@@ -52,12 +54,60 @@ export const TYPE_EXTRA_FIELDS: Record<IdeaType, ExtraField[]> = {
     { key: 'cost', label: '费用', placeholder: '例如 1', type: 'number' },
     { key: 'cardType', label: '卡牌类型', placeholder: '攻击 / 技能 / 能力' },
     { key: 'targetType', label: '目标', placeholder: '敌人 / 自己 / 全体' },
-    { key: 'rarity', label: '稀有度', placeholder: '普通 / 罕见 / 稀有' },
+    {
+      key: 'cardPool',
+      label: '角色卡池',
+      placeholder: '选择卡牌归属',
+      options: [
+        { value: 'ColorlessCardPool', label: '无色（全角色）' },
+        { value: 'IroncladCardPool', label: '铁甲战士' },
+        { value: 'SilentCardPool', label: '静默猎手' },
+        { value: 'DefectCardPool', label: '故障机器人' },
+        { value: 'RegentCardPool', label: '储君' },
+        { value: 'NecrobinderCardPool', label: '缚骨者' },
+      ],
+      help: '角色卡池会进入该角色的常规奖励和商店；无色卡池主要用于商店无色卡等来源。',
+    },
+    {
+      key: 'rarity',
+      label: '稀有度',
+      placeholder: '选择稀有度',
+      options: [
+        { value: 'Uncommon', label: '罕见' },
+        { value: 'Rare', label: '稀有' },
+        { value: 'Common', label: '普通' },
+      ],
+    },
     { key: 'upgrade', label: '升级变化', placeholder: '升级后的数值或效果' },
   ],
   RELIC: [
-    { key: 'rarity', label: '稀有度', placeholder: '普通 / 罕见 / 稀有 / Boss' },
-    { key: 'acquisition', label: '获得方式', placeholder: '战斗 / 事件 / 商店' },
+    {
+      key: 'rarity',
+      label: '稀有度',
+      placeholder: '选择稀有度',
+      options: [
+        { value: 'Common', label: '普通' },
+        { value: 'Uncommon', label: '罕见' },
+        { value: 'Rare', label: '稀有' },
+        { value: 'Shop', label: '商店' },
+      ],
+      help: '普通、罕见和稀有会进入随机遗物抓取池；商店只进入商店遗物槽。',
+    },
+    {
+      key: 'acquisition',
+      label: '获取池',
+      placeholder: '选择遗物归属',
+      options: [
+        { value: 'SharedRelicPool', label: '通用（全角色）' },
+        { value: 'IroncladRelicPool', label: '铁甲战士专属' },
+        { value: 'SilentRelicPool', label: '静默猎手专属' },
+        { value: 'DefectRelicPool', label: '故障机器人专属' },
+        { value: 'RegentRelicPool', label: '储君专属' },
+        { value: 'NecrobinderRelicPool', label: '缚骨者专属' },
+        { value: 'EventRelicPool', label: '事件/先古（需事件）' },
+      ],
+      help: '通用或角色专属池会进入奖励与商店；事件池必须由事件内容发放，不会自动随机出现。',
+    },
     { key: 'trigger', label: '触发时机', placeholder: '战斗开始 / 回合结束等' },
   ],
   EVENT: [

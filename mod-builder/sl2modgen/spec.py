@@ -43,6 +43,11 @@ CARD_POOLS = {
 
 RELIC_POOLS = {
     "SharedRelicPool",
+    "IroncladRelicPool",
+    "SilentRelicPool",
+    "DefectRelicPool",
+    "RegentRelicPool",
+    "NecrobinderRelicPool",
     "EventRelicPool",
     "FallbackRelicPool",
     "DeprecatedRelicPool",
@@ -308,7 +313,7 @@ def _validate_relic(content: dict) -> None:
     relic = content.get("relic")
     _require(isinstance(relic, dict), "RELIC 缺少 relic 配置。")
     _require(relic.get("rarity", "Common") in RELIC_RARITIES, "遗物稀有度不在白名单内。")
-    _require(relic.get("pool", "EventRelicPool") in RELIC_POOLS, "遗物池不在白名单内。")
+    _require(relic.get("pool", "SharedRelicPool") in RELIC_POOLS, "遗物池不在白名单内。")
     triggers = relic.get("triggers")
     _require(isinstance(triggers, list) and triggers, "遗物至少需要一个触发方式。")
     for trigger in triggers:

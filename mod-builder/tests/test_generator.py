@@ -25,8 +25,10 @@ class GeneratorTests(unittest.TestCase):
             "card_pile_actions.json",
             "card_discard_energy.json",
             "card_expanded_effects.json",
+            "card_ironclad.json",
             "relic_block.json",
             "relic_card_play_hp_loss.json",
+            "relic_ironclad.json",
             "power_ward.json",
         ):
             result = analyze_support(self.load(name))
@@ -104,6 +106,32 @@ class GeneratorTests(unittest.TestCase):
             self.assertIn("AfterCardPlayed", relic_code)
             self.assertIn("HittableEnemies", relic_code)
             self.assertIn("DamageProps.nonCardHpLoss", relic_code)
+
+    def test_registers_character_pools_and_guides_acquisition(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            card_project = generate_project(self.load("card_ironclad.json"), root / "card")
+            card_initializer = (card_project / "ModInitializer.cs").read_text(encoding="utf-8")
+            self.assertIn(
+                "ModHelper.AddModelToPool(typeof(IroncladCardPool), typeof(Ironclad_strike_demo))",
+                card_initializer,
+            )
+            card_guide = build_test_guide(self.load("card_ironclad.json"))
+            self.assertTrue(any("铁甲战士卡池" in note for note in card_guide["notes"]))
+
+            relic_project = generate_project(self.load("relic_ironclad.json"), root / "relic")
+            relic_initializer = (relic_project / "ModInitializer.cs").read_text(encoding="utf-8")
+            self.assertIn(
+                "ModHelper.AddModelToPool(typeof(IroncladRelicPool), typeof(Ironclad_guard_demo))",
+                relic_initializer,
+            )
+            relic_guide = build_test_guide(self.load("relic_ironclad.json"))
+            self.assertTrue(any("铁甲战士专属遗物池" in note for note in relic_guide["notes"]))
+
+            shop_relic = deepcopy(self.load("relic_ironclad.json"))
+            shop_relic["content"]["relic"]["rarity"] = "Shop"
+            shop_guide = build_test_guide(shop_relic)
+            self.assertTrue(any("商店遗物槽" in note for note in shop_guide["notes"]))
 
     def test_builds_console_test_guide(self) -> None:
         card = build_test_guide(self.load("card_burning.json"))

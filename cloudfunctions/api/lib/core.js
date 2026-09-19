@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const MOD_SPEC_VERSION = 'modspec-v6';
+const MOD_SPEC_VERSION = 'modspec-v7';
 
 const IDEA_TYPES = [
   'CARD',
@@ -32,7 +32,7 @@ const EVALUATION_STATUSES = [
 const JOB_STATUSES = ['QUEUED', 'RUNNING', 'RETRYING', 'SUCCEEDED', 'FAILED'];
 
 const TYPE_EXTRA_KEYS = {
-  CARD: ['cost', 'cardType', 'targetType', 'rarity', 'upgrade'],
+  CARD: ['cost', 'cardType', 'targetType', 'cardPool', 'rarity', 'upgrade'],
   RELIC: ['rarity', 'acquisition', 'trigger'],
   EVENT: ['chapter', 'optionCount', 'reward'],
   CHARACTER: ['resource', 'startingDeck', 'startingRelic', 'keywords'],

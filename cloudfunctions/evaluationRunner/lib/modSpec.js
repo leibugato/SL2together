@@ -6,6 +6,13 @@ const CARD_RARITY_MAP = {
   先古: 'Ancient',
   事件: 'Event',
   衍生: 'Token',
+  Basic: 'Basic',
+  Common: 'Common',
+  Uncommon: 'Uncommon',
+  Rare: 'Rare',
+  Ancient: 'Ancient',
+  Event: 'Event',
+  Token: 'Token',
 };
 
 const RELIC_RARITY_MAP = {
@@ -16,6 +23,60 @@ const RELIC_RARITY_MAP = {
   商店: 'Shop',
   事件: 'Event',
   先古: 'Ancient',
+  Starter: 'Starter',
+  Common: 'Common',
+  Uncommon: 'Uncommon',
+  Rare: 'Rare',
+  Shop: 'Shop',
+  Event: 'Event',
+  Ancient: 'Ancient',
+};
+
+const CARD_POOL_MAP = {
+  ColorlessCardPool: 'ColorlessCardPool',
+  无色: 'ColorlessCardPool',
+  无色卡池: 'ColorlessCardPool',
+  IroncladCardPool: 'IroncladCardPool',
+  铁甲战士: 'IroncladCardPool',
+  铁甲: 'IroncladCardPool',
+  SilentCardPool: 'SilentCardPool',
+  静默猎手: 'SilentCardPool',
+  静默: 'SilentCardPool',
+  DefectCardPool: 'DefectCardPool',
+  故障机器人: 'DefectCardPool',
+  故障: 'DefectCardPool',
+  RegentCardPool: 'RegentCardPool',
+  储君: 'RegentCardPool',
+  NecrobinderCardPool: 'NecrobinderCardPool',
+  缚骨者: 'NecrobinderCardPool',
+  骨缚者: 'NecrobinderCardPool',
+};
+
+const RELIC_POOL_MAP = {
+  SharedRelicPool: 'SharedRelicPool',
+  通用: 'SharedRelicPool',
+  共享: 'SharedRelicPool',
+  战斗: 'SharedRelicPool',
+  精英: 'SharedRelicPool',
+  宝箱: 'SharedRelicPool',
+  商店: 'SharedRelicPool',
+  IroncladRelicPool: 'IroncladRelicPool',
+  铁甲战士: 'IroncladRelicPool',
+  铁甲: 'IroncladRelicPool',
+  SilentRelicPool: 'SilentRelicPool',
+  静默猎手: 'SilentRelicPool',
+  静默: 'SilentRelicPool',
+  DefectRelicPool: 'DefectRelicPool',
+  故障机器人: 'DefectRelicPool',
+  故障: 'DefectRelicPool',
+  RegentRelicPool: 'RegentRelicPool',
+  储君: 'RegentRelicPool',
+  NecrobinderRelicPool: 'NecrobinderRelicPool',
+  缚骨者: 'NecrobinderRelicPool',
+  骨缚者: 'NecrobinderRelicPool',
+  EventRelicPool: 'EventRelicPool',
+  事件: 'EventRelicPool',
+  先古: 'EventRelicPool',
 };
 
 const POWER_CLASS_MAP = {
@@ -51,7 +112,7 @@ const KEYWORD_MAP = [
   [/永恒/, 'ETERNAL'],
 ];
 
-const MOD_SPEC_VERSION = 'modspec-v6';
+const MOD_SPEC_VERSION = 'modspec-v7';
 
 const EFFECT_ORDER_PATTERNS = {
   DAMAGE: /造成|攻击/,
@@ -129,6 +190,31 @@ function normalizeCardType(value, text) {
   if (/攻击/.test(source) || /造成.*伤害/.test(text)) return 'Attack';
   if (/能力/.test(source) || /每回合|持续.*层/.test(text)) return 'Power';
   return 'Skill';
+}
+
+function normalizeCardPool(value, text) {
+  const source = String(value || '').trim();
+  if (CARD_POOL_MAP[source]) return CARD_POOL_MAP[source];
+  const design = String(text || '');
+  if (/铁甲战士|铁甲|红裤衩/.test(design)) return 'IroncladCardPool';
+  if (/静默猎手|静默|猎人/.test(design)) return 'SilentCardPool';
+  if (/故障机器人|故障|机器人/.test(design)) return 'DefectCardPool';
+  if (/储君/.test(design)) return 'RegentCardPool';
+  if (/缚骨者|骨缚者/.test(design)) return 'NecrobinderCardPool';
+  return 'ColorlessCardPool';
+}
+
+function normalizeRelicPool(value, text) {
+  const source = String(value || '').trim();
+  if (RELIC_POOL_MAP[source]) return RELIC_POOL_MAP[source];
+  const design = String(text || '');
+  if (/铁甲战士|铁甲|红裤衩/.test(design)) return 'IroncladRelicPool';
+  if (/静默猎手|静默|猎人/.test(design)) return 'SilentRelicPool';
+  if (/故障机器人|故障|机器人/.test(design)) return 'DefectRelicPool';
+  if (/储君/.test(design)) return 'RegentRelicPool';
+  if (/缚骨者|骨缚者/.test(design)) return 'NecrobinderRelicPool';
+  if (/事件|先古/.test(design)) return 'EventRelicPool';
+  return 'SharedRelicPool';
 }
 
 function makeModId(contentId) {
@@ -388,7 +474,7 @@ function buildCardSpec(submission) {
             ? 'AnyEnemy'
             : 'Self',
       rarity: CARD_RARITY_MAP[String(extra.rarity || '')] || 'Common',
-      pool: 'ColorlessCardPool',
+      pool: normalizeCardPool(extra.cardPool, text),
       keywords: detectKeywords(text),
       effects,
       behaviors,
@@ -464,6 +550,17 @@ function buildRelicSpec(submission) {
     return unsupported('战斗开始的遗物第一版只支持获得格挡。');
   }
 
+  const pool = normalizeRelicPool(extra.acquisition, text);
+  const rarity =
+    RELIC_RARITY_MAP[String(extra.rarity || '')] ||
+    (/商店/.test(String(extra.acquisition || '')) ? 'Shop' : 'Common');
+  if (pool === 'EventRelicPool') {
+    return unsupported('当前自动生成只支持通用或角色专属遗物池；事件遗物需要配套事件内容。');
+  }
+  if (!['Common', 'Uncommon', 'Rare', 'Shop'].includes(rarity)) {
+    return unsupported('当前遗物自动获取只支持普通、罕见、稀有和商店稀有度。');
+  }
+
   const spec = baseSpec(submission);
   spec.content = {
     kind: 'RELIC',
@@ -471,8 +568,8 @@ function buildRelicSpec(submission) {
     name: submission.name || '未命名遗物',
     description: submission.designText,
     relic: {
-      rarity: RELIC_RARITY_MAP[String(extra.rarity || '')] || 'Common',
-      pool: 'EventRelicPool',
+      rarity,
+      pool,
       triggers: [{ type: trigger, effects }],
     },
   };

@@ -11,6 +11,7 @@
     <view class="support-section surface">
       <view class="support-title">卡牌</view>
       <view class="support-list">
+        <text>可选择无色卡池或铁甲战士、静默猎手、故障机器人、储君、缚骨者角色卡池；角色卡池会进入对应角色的常规奖励与商店</text>
         <text>单体或全体伤害、格挡、抽牌、获得能量或费用、治疗</text>
         <text>单体或全体伤害支持 2 至 10 段重复结算</text>
         <text>施加白名单内的虚弱、易伤、脆弱、力量、敏捷、中毒、荆棘、活力、集中、灾厄、覆甲、无实体等状态</text>
@@ -31,6 +32,7 @@
     <view class="support-section surface">
       <view class="support-title">遗物</view>
       <view class="support-list">
+        <text>可选择通用或角色专属遗物池；普通、罕见、稀有进入随机奖励抓取池，商店稀有度进入商店槽位</text>
         <text>获得遗物时触发</text>
         <text>战斗开始时获得格挡</text>
         <text>打出卡牌后触发格挡、抽牌、能量、治疗、已知状态，或让所有敌人直接失去生命</text>

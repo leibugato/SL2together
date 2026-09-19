@@ -364,6 +364,7 @@ MAX_DAILY_EVALUATIONS=10
   "extra": {
     "cost": 1,
     "cardType": "Attack",
+    "cardPool": "IroncladCardPool",
     "rarity": "Common"
   }
 }

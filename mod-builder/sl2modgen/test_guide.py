@@ -1,6 +1,25 @@
 from __future__ import annotations
 
 
+CARD_POOL_LABELS = {
+    "ColorlessCardPool": "无色卡池",
+    "IroncladCardPool": "铁甲战士卡池",
+    "SilentCardPool": "静默猎手卡池",
+    "DefectCardPool": "故障机器人卡池",
+    "RegentCardPool": "储君卡池",
+    "NecrobinderCardPool": "缚骨者卡池",
+}
+
+RELIC_POOL_LABELS = {
+    "SharedRelicPool": "通用遗物池",
+    "IroncladRelicPool": "铁甲战士专属遗物池",
+    "SilentRelicPool": "静默猎手专属遗物池",
+    "DefectRelicPool": "故障机器人专属遗物池",
+    "RegentRelicPool": "储君专属遗物池",
+    "NecrobinderRelicPool": "缚骨者专属遗物池",
+}
+
+
 def build_test_guide(spec: dict) -> dict:
     mod = spec["mod"]
     content = spec["content"]
@@ -14,6 +33,7 @@ def build_test_guide(spec: dict) -> dict:
     notes: list[str] = []
 
     if kind == "CARD":
+        pool = content["card"].get("pool", "ColorlessCardPool")
         commands.append(
             {
                 "label": "将测试卡牌加入手牌",
@@ -29,7 +49,16 @@ def build_test_guide(spec: dict) -> dict:
             }
         )
         notes.append("进入战斗后再执行 hand 命令；查看卡图可使用 deck 命令。")
+        if pool == "ColorlessCardPool":
+            notes.append("该卡已注册到无色卡池；商店无色卡位主要出现罕见或稀有卡，其他无色生成效果仍受各自规则影响。")
+        else:
+            notes.append(
+                f"该卡已注册到{CARD_POOL_LABELS.get(pool, pool)}，会进入对应角色的常规奖励与商店。"
+            )
     elif kind == "RELIC":
+        relics = content["relic"]
+        pool = relics.get("pool", "SharedRelicPool")
+        rarity = relics.get("rarity", "Common")
         commands.append(
             {
                 "label": "获得测试遗物",
@@ -44,6 +73,14 @@ def build_test_guide(spec: dict) -> dict:
                 "description": "测试结束后移除遗物。",
             }
         )
+        if rarity == "Shop":
+            notes.append(
+                f"该遗物已注册到{RELIC_POOL_LABELS.get(pool, pool)}，稀有度为商店，正常运行时会进入商店遗物槽。"
+            )
+        else:
+            notes.append(
+                f"该遗物已注册到{RELIC_POOL_LABELS.get(pool, pool)}，会进入对应角色的随机遗物奖励抓取池；实际出现还受稀有度、解锁和现有遗物影响。"
+            )
     else:
         commands.append(
             {

@@ -143,6 +143,15 @@ assert.throws(
     }),
   /至少需要 15 个字符/,
 );
+assert.equal(
+  normalizeForm({
+    type: 'CARD',
+    name: '角色卡池',
+    designText: '对一名敌人造成六点伤害并抽一张牌。',
+    extra: { cardPool: 'IroncladCardPool' },
+  }).extra.cardPool,
+  'IroncladCardPool',
+);
 
 const publicDraft = publicSubmission({
   _id: 'submission_test',
@@ -189,7 +198,7 @@ const generatedCard = buildRuleModSpec(
   }),
 );
 assert.equal(generatedCard.supported, true);
-assert.equal(generatedCard.version, 'modspec-v6');
+assert.equal(generatedCard.version, 'modspec-v7');
 assert.match(generatedCard.spec.mod.id, /^sl2t_a1b2c3d4_/);
 assert.ok(generatedCard.spec.mod.name.includes('A1B2C3D4'));
 assert.ok(generatedCard.spec.mod.name.includes('飞刀连击'));
@@ -201,6 +210,24 @@ assert.ok(
     (behavior) => behavior.type === 'AUTO_PLAY_FROM_EXHAUST',
   ),
 );
+assert.equal(generatedCard.spec.content.card.pool, 'ColorlessCardPool');
+
+const generatedIroncladCard = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_ironclad_card',
+    ownerTag: 'A1B2C3D4',
+    type: 'CARD',
+    designText: '造成6点伤害。',
+    extra: {
+      cost: 1,
+      cardType: '攻击',
+      cardPool: 'IroncladCardPool',
+      rarity: 'Common',
+    },
+  }),
+);
+assert.equal(generatedIroncladCard.supported, true);
+assert.equal(generatedIroncladCard.spec.content.card.pool, 'IroncladCardPool');
 
 const generatedDiscard = buildRuleModSpec(
   baseSubmission({
@@ -294,6 +321,38 @@ const generatedRelic = buildRuleModSpec(
 );
 assert.equal(generatedRelic.supported, true);
 assert.equal(generatedRelic.spec.content.relic.triggers[0].type, 'BEFORE_COMBAT_START');
+assert.equal(generatedRelic.spec.content.relic.pool, 'SharedRelicPool');
+
+const generatedCharacterRelic = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_ironclad_relic',
+    type: 'RELIC',
+    name: '铁甲专属护符',
+    designText: '战斗开始时获得5点格挡。',
+    extra: {
+      rarity: 'Uncommon',
+      acquisition: 'IroncladRelicPool',
+      trigger: '战斗开始',
+    },
+  }),
+);
+assert.equal(generatedCharacterRelic.supported, true);
+assert.equal(generatedCharacterRelic.spec.content.relic.pool, 'IroncladRelicPool');
+
+const unsupportedEventRelic = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_event_relic',
+    type: 'RELIC',
+    name: '事件遗物',
+    designText: '战斗开始时获得5点格挡。',
+    extra: {
+      rarity: 'Event',
+      acquisition: 'EventRelicPool',
+      trigger: '战斗开始',
+    },
+  }),
+);
+assert.equal(unsupportedEventRelic.supported, false);
 
 const generatedHpLossRelic = buildRuleModSpec(
   baseSubmission({

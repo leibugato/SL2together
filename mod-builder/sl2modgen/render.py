@@ -499,7 +499,7 @@ def render_relic(namespace: str, content: dict) -> tuple[str, list[str], str]:
             "}",
         ]
     )
-    return code, [relic.get("pool", "EventRelicPool")], class_name
+    return code, [relic.get("pool", "SharedRelicPool")], class_name
 
 
 def _power_effect_lines(effects: list[dict], context_name: str = "context") -> list[str]:
