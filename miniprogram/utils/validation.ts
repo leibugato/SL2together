@@ -17,8 +17,8 @@ export function validateIdeaForm(form: IdeaForm): string | null {
     return '名称需要 1 至 60 个字符。';
   }
   const designText = form.designText.trim();
-  if (designText.length < 20 || designText.length > 5000) {
-    return '描述与设计需要 20 至 5000 个字符。';
+  if (designText.length < 15 || designText.length > 5000) {
+    return '描述与设计需要 15 至 5000 个字符。';
   }
   const url = form.resourceUrl.trim();
   if (url && !/^https?:\/\/[^\s]+$/i.test(url)) {

@@ -54,6 +54,20 @@ const CURATED_KNOWLEDGE_ENTRIES = [
     suggestions: ['明确触发窗口、每回合次数上限和多人同步要求。'],
   },
   {
+    id: 'relic-all-enemy-hp-loss',
+    types: ['RELIC', 'BUFF', 'CARD'],
+    keywords: ['所有敌人', '失去生命', '生命值', '每打出一张牌', '直接失去'],
+    title: '所有敌人直接失去生命',
+    facts: [
+      '这类效果不是普通攻击伤害，应按不可格挡、不受力量等伤害修正影响的直接生命损失处理。',
+      '现有命令可用 CreatureCmd.Damage 配合 DamageProps.nonCardHpLoss 对 HittableEnemies 批量结算。',
+      '触发时机可复用遗物或 Power 的 AfterCardPlayed，不需要自定义一套新战斗系统。',
+    ],
+    anchors: ['RelicModel', 'PowerModel', 'DamageCmd', 'HittableEnemies'],
+    risks: ['如果按普通可格挡伤害实现，会与“失去生命值”的设计语义不一致。'],
+    suggestions: ['明确触发频率、目标范围和每次触发数值。'],
+  },
+  {
     id: 'event-core',
     types: ['EVENT'],
     keywords: ['选项', '奖励', '惩罚', '章节', '事件'],

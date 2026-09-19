@@ -10,6 +10,7 @@ cloudfunctions/**/node_modules/
 !.env.example
 *.local
 private/
+.tmp/
 .DS_Store
 project.private.config.json
 

@@ -51,7 +51,7 @@ const KEYWORD_MAP = [
   [/永恒/, 'ETERNAL'],
 ];
 
-const MOD_SPEC_VERSION = 'modspec-v5';
+const MOD_SPEC_VERSION = 'modspec-v6';
 
 const EFFECT_ORDER_PATTERNS = {
   DAMAGE: /造成|攻击/,
@@ -68,6 +68,7 @@ const EFFECT_ORDER_PATTERNS = {
   COPY_THIS_CARD_TO_PILE: /此牌的复制品|这张牌的复制品|复制一张此牌|复制本牌|复制.{0,4}此牌|复制.{0,4}这张牌/,
   GAIN_MAX_HP: /获得.*最大生命|提高.*最大生命/,
   LOSE_MAX_HP: /失去.*最大生命/,
+  LOSE_HP_ALL_ENEMIES: /所有敌人.*(?:失去|损失).*生命|(?:失去|损失).*生命.*所有敌人/,
   LOSE_HP: /失去.*生命/,
   GAIN_GOLD: /获得.*金币|\d+\s*金币/,
 };
@@ -110,6 +111,17 @@ function detectHitCount(text) {
   if (!match) return null;
   const value = Number(match[1]);
   return Number.isFinite(value) && value >= 2 ? Math.min(10, Math.floor(value)) : null;
+}
+
+function detectAllEnemiesHpLoss(text) {
+  const patterns = [
+    /所有敌人.{0,12}?(?:失去|损失)\s*(\d+)\s*点?生命(?:值)?/,
+    /(?:使|令|让)?所有敌人.{0,12}?(?:失去|损失)\s*(\d+)\s*点?生命(?:值)?/,
+    /(?:失去|损失)\s*(\d+)\s*点?生命(?:值)?.{0,12}?所有敌人/,
+  ];
+  return extractNumber(text, patterns[0], 0, 999) ||
+    extractNumber(text, patterns[1], 0, 999) ||
+    extractNumber(text, patterns[2], 0, 999);
 }
 
 function normalizeCardType(value, text) {
@@ -389,7 +401,9 @@ function relicTrigger(text, extraTrigger) {
   const source = `${text}\n${extraTrigger || ''}`;
   if (/获得(?:时|后)|拾取/.test(source)) return 'AFTER_OBTAINED';
   if (/战斗开始|进入战斗/.test(source)) return 'BEFORE_COMBAT_START';
-  if (/打出(?:一张)?牌后|使用卡牌后/.test(source)) return 'AFTER_CARD_PLAYED';
+  if (/每(?:次)?打出(?:一张)?牌|打出(?:一张)?牌后|使用卡牌后/.test(source)) {
+    return 'AFTER_CARD_PLAYED';
+  }
   if (/回合结束/.test(source)) return 'AFTER_TURN_END';
   return '';
 }
@@ -427,6 +441,13 @@ function buildRelicSpec(submission) {
       amount: extractNumber(text, /(?:回复|治疗)\s*(\d+)\s*点?生命/, 5, 99),
     });
   }
+  const allEnemiesHpLoss = detectAllEnemiesHpLoss(text);
+  if (allEnemiesHpLoss) {
+    effects.push({
+      type: 'LOSE_HP_ALL_ENEMIES',
+      amount: allEnemiesHpLoss,
+    });
+  }
   const power = detectPower(text);
   if (power) {
     effects.push({
@@ -437,7 +458,7 @@ function buildRelicSpec(submission) {
     });
   }
   if (!effects.length) {
-    return unsupported('遗物效果未包含白名单内的格挡、抽牌、能量、治疗或已知状态。');
+    return unsupported('遗物效果未包含白名单内的格挡、抽牌、能量、治疗、已知状态或所有敌人失去生命。');
   }
   if (trigger === 'BEFORE_COMBAT_START' && effects.some((effect) => effect.type !== 'GAIN_BLOCK')) {
     return unsupported('战斗开始的遗物第一版只支持获得格挡。');
@@ -460,7 +481,13 @@ function buildRelicSpec(submission) {
 
 function powerTrigger(text, extraTrigger) {
   const source = `${text}\n${extraTrigger || ''}`;
-  if (/打出(?:一张)?牌后|使用卡牌后|每次.*打出/.test(source)) return 'AFTER_CARD_PLAYED';
+  if (
+    /每(?:次)?打出(?:一张)?牌|打出(?:一张)?牌后|使用卡牌后|每次.*打出/.test(
+      source,
+    )
+  ) {
+    return 'AFTER_CARD_PLAYED';
+  }
   if (/回合结束/.test(source)) return 'AFTER_TURN_END';
   return '';
 }
@@ -477,12 +504,16 @@ function buildPowerSpec(submission) {
   if (/抽(?:牌|\s*\d+\s*张)/.test(text)) effects.push({ type: 'DRAW' });
   if (/能量|费用/.test(text)) effects.push({ type: 'GAIN_ENERGY' });
   if (/回复.*生命|治疗/.test(text)) effects.push({ type: 'HEAL' });
+  const allEnemiesHpLoss = detectAllEnemiesHpLoss(text);
+  if (allEnemiesHpLoss) {
+    effects.push({ type: 'LOSE_HP_ALL_ENEMIES', amount: allEnemiesHpLoss });
+  }
   const power = detectPower(text);
   if (power) {
     effects.push({ type: 'APPLY_POWER', power: power.power, amount: power.amount, target: 'OWNER' });
   }
   if (!effects.length) {
-    return unsupported('Buff 效果未包含白名单内的格挡、抽牌、能量、治疗或已知状态。');
+    return unsupported('Buff 效果未包含白名单内的格挡、抽牌、能量、治疗、已知状态或所有敌人失去生命。');
   }
 
   const spec = baseSpec(submission);

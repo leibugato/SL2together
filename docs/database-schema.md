@@ -21,7 +21,7 @@
 | `_openid` | string | 所属用户 |
 | `type` | string | 十类内容枚举 |
 | `name` | string | 1 至 60 字符 |
-| `designText` | string | 20 至 5000 字符 |
+| `designText` | string | 15 至 5000 字符 |
 | `resourceUrl` | string | 可选 HTTP(S) 链接 |
 | `extra` | object | 按类型保存的补充字段 |
 | `status` | string | 设计生命周期：`DRAFT`、`SUBMITTED`、`DELETED` |

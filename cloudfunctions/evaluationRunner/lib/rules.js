@@ -22,7 +22,7 @@ const TYPE_LABELS = {
 
 const TYPE_DIMENSIONS = {
   CARD: { apiFit: 10, logicComplexity: 6, integrationScope: 3, visualAssets: 4, compatibility: 2, versionStability: 2 },
-  RELIC: { apiFit: 9, logicComplexity: 5, integrationScope: 3, visualAssets: 4, compatibility: 2, versionStability: 2 },
+  RELIC: { apiFit: 5, logicComplexity: 3, integrationScope: 2, visualAssets: 4, compatibility: 1, versionStability: 1 },
   EVENT: { apiFit: 12, logicComplexity: 8, integrationScope: 7, visualAssets: 6, compatibility: 4, versionStability: 4 },
   CHARACTER: { apiFit: 18, logicComplexity: 15, integrationScope: 13, visualAssets: 14, compatibility: 9, versionStability: 7 },
   ANCIENT: { apiFit: 17, logicComplexity: 13, integrationScope: 12, visualAssets: 13, compatibility: 7, versionStability: 6 },
@@ -148,6 +148,11 @@ const KEYWORD_RULES = [
     reason: '“永恒”对应 CardKeyword.Eternal，效果是卡牌无法从牌组中移除或变化。',
     risk:
       '整副牌组获得永恒时，需要处理已有卡牌、后续加入牌组的新卡牌，以及遗物移除或读档后的状态回滚。',
+  },
+  {
+    pattern: /所有敌人.{0,12}(?:失去|损失).{0,4}生命|(?:失去|损失).{0,4}生命.{0,12}所有敌人/,
+    reason:
+      '“失去生命值”应按不可格挡且不受力量等伤害修正影响的直接生命损失处理，不会按普通攻击伤害结算。',
   },
   {
     pattern: /消耗(?:一张|所有|牌|手牌|抽牌堆|弃牌堆|牌堆)|被消耗|消耗过/,
@@ -288,9 +293,15 @@ function analyze(submission) {
 
   const extra = submission.extra || {};
   const required = TYPE_REQUIRED_EXTRA[type] || [];
+  const triggerInText =
+    type !== 'RELIC' ||
+    /获得(?:时|后)|拾取|战斗开始|进入战斗|每(?:次)?打出(?:一张)?牌|打出(?:一张)?牌后|使用卡牌后|回合结束/.test(
+      text,
+    );
   const missingInformation = required
     .filter(([key]) => {
       const value = extra[key];
+      if (key === 'trigger' && triggerInText) return false;
       return value === undefined || value === null || String(value).trim() === '';
     })
     .map(([, label]) => label);

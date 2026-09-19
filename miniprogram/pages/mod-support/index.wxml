@@ -33,7 +33,7 @@
       <view class="support-list">
         <text>获得遗物时触发</text>
         <text>战斗开始时获得格挡</text>
-        <text>打出卡牌后触发格挡、抽牌、能量、治疗或已知状态</text>
+        <text>打出卡牌后触发格挡、抽牌、能量、治疗、已知状态，或让所有敌人直接失去生命</text>
         <text>回合结束时触发格挡、抽牌、能量、治疗或已知状态</text>
       </view>
       <button class="secondary-button support-action" bindtap="createRelic">创建设计遗物</button>
@@ -43,7 +43,7 @@
       <view class="support-title">Buff</view>
       <view class="support-list">
         <text>Buff 或 Debuff，支持层数叠加或单层状态</text>
-        <text>打出卡牌后触发格挡、抽牌、能量、治疗或已知状态</text>
+        <text>打出卡牌后触发格挡、抽牌、能量、治疗、已知状态，或让所有敌人直接失去生命</text>
         <text>回合结束时触发格挡、抽牌、能量、治疗或已知状态</text>
         <text>自动附带一张测试卡，方便在游戏中快速施加该 Buff</text>
       </view>

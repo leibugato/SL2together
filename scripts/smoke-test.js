@@ -5,7 +5,10 @@ const {
   parseJsonCandidate,
   sanitizeModelResult,
 } = require('../cloudfunctions/evaluationRunner/lib/schema');
-const { publicSubmission } = require('../cloudfunctions/api/lib/core');
+const {
+  normalizeForm,
+  publicSubmission,
+} = require('../cloudfunctions/api/lib/core');
 const {
   createShareCode,
   getShareExpiry,
@@ -99,7 +102,7 @@ const sanitized = sanitizeModelResult(
   card,
 );
 assert.equal(sanitized.technicalAnchors.length, 1);
-assert.equal(sanitized.difficulty.label, '困难');
+assert.equal(sanitized.difficulty.label, '中等');
 assert.ok(sanitized.implementationBrief.length > 0);
 assert.deepEqual(sanitized.missingInformation, ['升级后的具体数值']);
 assert.equal(sanitized.modGeneration.supported, true);
@@ -121,6 +124,25 @@ const concise = sanitizeModelResult(
 assert.ok(concise.reasons.length <= 4);
 assert.ok(concise.risks.length <= 4);
 assert.equal(new Set(concise.reasons).size, concise.reasons.length);
+
+assert.doesNotThrow(() =>
+  normalizeForm({
+    type: 'CARD',
+    name: '十五字校验',
+    designText: '123456789012345',
+    extra: {},
+  }),
+);
+assert.throws(
+  () =>
+    normalizeForm({
+      type: 'CARD',
+      name: '十五字校验',
+      designText: '12345678901234',
+      extra: {},
+    }),
+  /至少需要 15 个字符/,
+);
 
 const publicDraft = publicSubmission({
   _id: 'submission_test',
@@ -167,7 +189,7 @@ const generatedCard = buildRuleModSpec(
   }),
 );
 assert.equal(generatedCard.supported, true);
-assert.equal(generatedCard.version, 'modspec-v5');
+assert.equal(generatedCard.version, 'modspec-v6');
 assert.match(generatedCard.spec.mod.id, /^sl2t_a1b2c3d4_/);
 assert.ok(generatedCard.spec.mod.name.includes('A1B2C3D4'));
 assert.ok(generatedCard.spec.mod.name.includes('飞刀连击'));
@@ -272,6 +294,62 @@ const generatedRelic = buildRuleModSpec(
 );
 assert.equal(generatedRelic.supported, true);
 assert.equal(generatedRelic.spec.content.relic.triggers[0].type, 'BEFORE_COMBAT_START');
+
+const generatedHpLossRelic = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_relic_hp_loss',
+    ownerTag: 'A1B2C3D4',
+    type: 'RELIC',
+    name: '余烬回响',
+    designText: '每打出一张牌，所有敌人失去2点生命值。',
+    extra: { rarity: '罕见', trigger: '每打出一张牌' },
+  }),
+);
+assert.equal(generatedHpLossRelic.supported, true);
+assert.equal(generatedHpLossRelic.spec.content.relic.triggers[0].type, 'AFTER_CARD_PLAYED');
+assert.equal(
+  generatedHpLossRelic.spec.content.relic.triggers[0].effects[0].type,
+  'LOSE_HP_ALL_ENEMIES',
+);
+assert.equal(
+  generatedHpLossRelic.spec.content.relic.triggers[0].effects[0].amount,
+  2,
+);
+
+const simpleRelic = analyze(
+  baseSubmission({
+    type: 'RELIC',
+    name: '余烬回响',
+    designText: '每打出一张牌，所有敌人失去2点生命值。',
+    extra: { rarity: '罕见', trigger: '每打出一张牌' },
+  }),
+);
+assert.equal(simpleRelic.difficulty.level, 'SIMPLE');
+assert.ok(simpleRelic.dimensions.apiFit <= 10);
+assert.ok(simpleRelic.dimensions.logicComplexity <= 8);
+const calibratedSimpleRelic = sanitizeModelResult(
+  {
+    difficulty: 'EXTREME',
+    score: 100,
+    confidence: 0.95,
+    summary: '模型给出了偏高的原始分数。',
+    reasons: ['测试维度校准'],
+    risks: [],
+    suggestions: [],
+    missingInformation: [],
+    dimensions: {
+      apiFit: 25,
+      logicComplexity: 20,
+      integrationScope: 15,
+      visualAssets: 15,
+      compatibility: 15,
+      versionStability: 10,
+    },
+  },
+  simpleRelic,
+);
+assert.equal(calibratedSimpleRelic.difficulty.level, 'SIMPLE');
+assert.ok(calibratedSimpleRelic.difficulty.score <= 24);
 
 const unsupportedMod = buildRuleModSpec(
   baseSubmission({

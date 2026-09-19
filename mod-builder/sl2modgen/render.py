@@ -393,6 +393,20 @@ def _relic_effect_lines(effects: list[dict], context_name: str = "context") -> l
                 f'        await PowerCmd.Apply<{effect["power"]}>({context_name}, Owner.Creature, '
                 f'{amount}m, Owner.Creature, null);'
             )
+        elif effect_type == "LOSE_HP_ALL_ENEMIES":
+            lines.extend(
+                [
+                    "        {",
+                    "            ICombatState? combatState = Owner.Creature.CombatState;",
+                    "            if (combatState == null)",
+                    "            {",
+                    "                return;",
+                    "            }",
+                    f"            await CreatureCmd.Damage({context_name}, combatState.HittableEnemies, {amount}m, "
+                    "                DamageProps.nonCardHpLoss, Owner.Creature, null, null);",
+                    "        }",
+                ]
+            )
     return lines
 
 
@@ -504,6 +518,20 @@ def _power_effect_lines(effects: list[dict], context_name: str = "context") -> l
             lines.append(
                 f'        await PowerCmd.Apply<{effect["power"]}>({context_name}, Owner, '
                 f'{effect["amount"]}m, Owner, null);'
+            )
+        elif effect_type == "LOSE_HP_ALL_ENEMIES":
+            lines.extend(
+                [
+                    "        {",
+                    "            ICombatState? combatState = base.CombatState;",
+                    "            if (combatState == null)",
+                    "            {",
+                    "                return;",
+                    "            }",
+                    f"            await CreatureCmd.Damage({context_name}, combatState.HittableEnemies, {effect['amount']}m, "
+                    "                DamageProps.nonCardHpLoss, Owner, null, null);",
+                    "        }",
+                ]
             )
     return lines
 

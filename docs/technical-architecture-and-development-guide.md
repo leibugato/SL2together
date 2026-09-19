@@ -559,7 +559,7 @@ MAX_DAILY_EVALUATIONS=10
   "ok": false,
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "描述与设计至少需要 20 个字符。",
+    "message": "描述与设计至少需要 15 个字符。",
     "retryable": false
   },
   "requestId": "req_xxx"

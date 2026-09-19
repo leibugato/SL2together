@@ -26,6 +26,7 @@ class GeneratorTests(unittest.TestCase):
             "card_discard_energy.json",
             "card_expanded_effects.json",
             "relic_block.json",
+            "relic_card_play_hp_loss.json",
             "power_ward.json",
         ):
             result = analyze_support(self.load(name))
@@ -87,6 +88,22 @@ class GeneratorTests(unittest.TestCase):
             ).read_text(encoding="utf-8")
             self.assertIn("PowerStackType.Counter", power_code)
             self.assertIn("PowerCmd.Apply<Ward_power>", test_card_code)
+
+    def test_generates_relic_all_enemy_hp_loss(self) -> None:
+        spec = self.load("relic_card_play_hp_loss.json")
+        with tempfile.TemporaryDirectory() as directory:
+            project = generate_project(spec, Path(directory) / "relic-hp-loss")
+            relic_code = (
+                project
+                / "src"
+                / "Core"
+                / "Models"
+                / "Cards"
+                / "Embers_echo.cs"
+            ).read_text(encoding="utf-8")
+            self.assertIn("AfterCardPlayed", relic_code)
+            self.assertIn("HittableEnemies", relic_code)
+            self.assertIn("DamageProps.nonCardHpLoss", relic_code)
 
     def test_builds_console_test_guide(self) -> None:
         card = build_test_guide(self.load("card_burning.json"))

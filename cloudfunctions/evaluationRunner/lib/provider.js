@@ -39,6 +39,8 @@ function buildPrompt(submission, ruleResult, catalogVersion, knowledgeSnippets =
     '严格输出 JSON，不要 Markdown 代码围栏，不要附加解释。',
     'JSON 必须包含：difficulty(SIMPLE/MEDIUM/HARD/EXTREME)、score(0-100)、confidence(0-1)、provisional、summary、implementationBrief、reasons、risks、suggestions、missingInformation、technicalAnchors、dimensions。',
     'dimensions 必须包含 apiFit(0-25)、logicComplexity(0-20)、integrationScope(0-15)、visualAssets(0-15)、compatibility(0-15)、versionStability(0-10)。',
+    'dimensions 是难度贡献值，越高表示改动量、逻辑量或风险越大，不是实现质量评分。',
+    '不要因为效果“全局生效”或看起来很强就抬高分数；已有触发钩子、统一遍历目标和现有命令能够完成时，应按改动较小的方案评估。',
     `知识库版本：${catalogVersion}`,
     `规则预判：${JSON.stringify(compactRuleResult)}`,
     `相关知识片段：${JSON.stringify(knowledgeSnippets)}`,

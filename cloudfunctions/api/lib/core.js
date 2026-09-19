@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const MOD_SPEC_VERSION = 'modspec-v5';
+const MOD_SPEC_VERSION = 'modspec-v6';
 
 const IDEA_TYPES = [
   'CARD',
@@ -123,7 +123,7 @@ function normalizeForm(form) {
   const designText = String(form.designText || '').trim();
   assert(name.length >= 1, 'VALIDATION_ERROR', '名称不能为空。');
   assert(name.length <= 60, 'VALIDATION_ERROR', '名称不能超过 60 个字符。');
-  assert(designText.length >= 20, 'VALIDATION_ERROR', '描述与设计至少需要 20 个字符。');
+  assert(designText.length >= 15, 'VALIDATION_ERROR', '描述与设计至少需要 15 个字符。');
   assert(designText.length <= 5000, 'VALIDATION_ERROR', '描述与设计不能超过 5000 个字符。');
   return {
     type: form.type,

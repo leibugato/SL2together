@@ -87,6 +87,7 @@ EFFECTS = {
     "GAIN_MAX_HP",
     "LOSE_MAX_HP",
     "LOSE_HP",
+    "LOSE_HP_ALL_ENEMIES",
     "GAIN_GOLD",
 }
 
@@ -96,6 +97,7 @@ NON_CARD_EFFECTS = {
     "GAIN_ENERGY",
     "HEAL",
     "APPLY_POWER",
+    "LOSE_HP_ALL_ENEMIES",
 }
 
 RELIC_TRIGGERS = {
@@ -227,6 +229,14 @@ def _validate_effect(effect: dict, kind: str, index: int) -> None:
             "COPY_THIS_CARD_TO_PILE 去向只能是 HAND、DISCARD 或 DRAW_TOP。",
         )
         _positive_int(effect.get("count", 1), f"effects[{index}].count", 3)
+        return
+
+    if effect_type == "LOSE_HP_ALL_ENEMIES":
+        _require(
+            kind in {"RELIC", "POWER"},
+            "LOSE_HP_ALL_ENEMIES 第一版只允许遗物或 Buff 使用。",
+        )
+        _positive_int(effect.get("amount"), f"effects[{index}].amount", 999)
         return
 
     if effect_type in {"GAIN_MAX_HP", "LOSE_MAX_HP", "LOSE_HP", "GAIN_GOLD"}:

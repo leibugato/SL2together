@@ -45,7 +45,7 @@
         value="{{form.designText}}"
         maxlength="5000"
         auto-height="{{false}}"
-        placeholder="说明效果、触发时机、数值、升级变化和预期体验。至少 20 个字符。"
+        placeholder="说明效果、触发时机、数值、升级变化和预期体验。至少 15 个字符。"
         bindinput="onDesignInput"
       ></textarea>
       <text class="field-help">{{form.designText.length}} / 5000</text>

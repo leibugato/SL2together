@@ -59,7 +59,7 @@ async function incrementUsage(db, openid, date) {
 
 async function start(db, openid, event) {
   const submission = await getOwnedSubmission(db, openid, event.submissionId);
-  assert(submission.designText && submission.designText.length >= 20, 'VALIDATION_ERROR', '设计信息不完整，无法评估。');
+  assert(submission.designText && submission.designText.length >= 15, 'VALIDATION_ERROR', '设计信息不完整，无法评估。');
 
   const catalogVersion = getCatalogVersion();
   const promptVersion = getPromptVersion();

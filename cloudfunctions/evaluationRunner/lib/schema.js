@@ -1,6 +1,5 @@
 const { DIFFICULTY_LABELS, TYPE_ANCHORS, difficultyFromScore } = require('./rules');
 
-const DIFFICULTIES = Object.keys(DIFFICULTY_LABELS);
 const DIMENSION_KEYS = [
   'apiFit',
   'logicComplexity',
@@ -9,6 +8,22 @@ const DIMENSION_KEYS = [
   'compatibility',
   'versionStability',
 ];
+const DIMENSION_MAX = {
+  apiFit: 25,
+  logicComplexity: 20,
+  integrationScope: 15,
+  visualAssets: 15,
+  compatibility: 15,
+  versionStability: 10,
+};
+const MODEL_EXTRA_CAPS = {
+  apiFit: 6,
+  logicComplexity: 6,
+  integrationScope: 4,
+  visualAssets: 4,
+  compatibility: 4,
+  versionStability: 3,
+};
 const ANCHOR_WHITELIST = new Set(
   Object.values(TYPE_ANCHORS)
     .flat()
@@ -74,9 +89,19 @@ function sanitizeDimensions(value, fallback) {
     return fallback.dimensions;
   }
   return DIMENSION_KEYS.reduce((result, key) => {
-    const max = key === 'apiFit' ? 25 : key === 'logicComplexity' ? 20 : key === 'versionStability' ? 10 : 15;
+    const max = DIMENSION_MAX[key];
     const number = Number(value[key]);
-    result[key] = Number.isFinite(number) ? clamp(Math.round(number), 0, max) : Number(fallback.dimensions[key] || 0);
+    const baseline = clamp(Number(fallback.dimensions?.[key] || 0), 0, max);
+    result[key] = Number.isFinite(number)
+      ? clamp(
+          Math.round(
+            baseline * 0.85 +
+              clamp(number, 0, Math.min(max, baseline + MODEL_EXTRA_CAPS[key])) * 0.15,
+          ),
+          0,
+          max,
+        )
+      : baseline;
     return result;
   }, {});
 }
@@ -99,11 +124,16 @@ function sanitizeModelResult(raw, fallback) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     return null;
   }
-  const score = clamp(Math.round(Number(raw.score)), 0, 100);
-  if (!Number.isFinite(score)) {
+  if (!Number.isFinite(Number(raw.score))) {
     return null;
   }
-  const level = DIFFICULTIES.includes(raw.difficulty) ? raw.difficulty : difficultyFromScore(score);
+  const dimensions = sanitizeDimensions(raw.dimensions, fallback);
+  const score = clamp(
+    Object.values(dimensions).reduce((sum, value) => sum + Number(value || 0), 0),
+    0,
+    100,
+  );
+  const level = difficultyFromScore(score);
   const reasons = cleanStrings(raw.reasons, 4, 180);
   const summary = String(raw.summary || '').trim().slice(0, 360);
   const implementationBrief = String(
@@ -140,7 +170,7 @@ function sanitizeModelResult(raw, fallback) {
     suggestions: cleanStrings(raw.suggestions, 4, 180),
     missingInformation,
     technicalAnchors: sanitizeTechnicalAnchors(raw.technicalAnchors, fallback),
-    dimensions: sanitizeDimensions(raw.dimensions, fallback),
+    dimensions,
     modGeneration: fallback.modGeneration || {
       supported: false,
       reason: '当前评估结果没有可用的自动生成规格。',

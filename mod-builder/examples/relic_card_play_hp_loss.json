@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "mod": {
+    "id": "sl2t_relic_hp_loss",
+    "name": "余烬回响演示",
+    "author": "SL2Together",
+    "description": "验证打出卡牌后所有敌人直接失去生命。",
+    "version": "1.0.0"
+  },
+  "content": {
+    "kind": "RELIC",
+    "id": "EMBERS_ECHO",
+    "name": "余烬回响",
+    "description": "每打出一张牌，所有敌人失去2点生命值。",
+    "relic": {
+      "rarity": "Uncommon",
+      "pool": "EventRelicPool",
+      "triggers": [
+        {
+          "type": "AFTER_CARD_PLAYED",
+          "effects": [
+            {
+              "type": "LOSE_HP_ALL_ENEMIES",
+              "amount": 2
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
