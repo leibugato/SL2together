@@ -55,6 +55,8 @@ def build_test_guide(spec: dict) -> dict:
             notes.append(
                 f"该卡已注册到{CARD_POOL_LABELS.get(pool, pool)}，会进入对应角色的常规奖励与商店。"
             )
+        if any(effect.get("upgradeDelta") for effect in content["card"].get("effects", [])):
+            notes.append("执行 card 命令后，再输入 upgrade 0 可将手牌最左侧的卡升级；实际位置不是最左时改为对应手牌索引。")
     elif kind == "RELIC":
         relics = content["relic"]
         pool = relics.get("pool", "SharedRelicPool")

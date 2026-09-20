@@ -119,6 +119,7 @@ class GeneratorTests(unittest.TestCase):
             )
             card_guide = build_test_guide(self.load("card_ironclad.json"))
             self.assertTrue(any("铁甲战士卡池" in note for note in card_guide["notes"]))
+            self.assertTrue(any("upgrade 0" in note for note in card_guide["notes"]))
 
             relic_project = generate_project(self.load("relic_ironclad.json"), root / "relic")
             relic_initializer = (relic_project / "ModInitializer.cs").read_text(encoding="utf-8")
