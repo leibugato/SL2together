@@ -357,6 +357,7 @@ function baseSpec(submission) {
     .slice(-8);
   return {
     schemaVersion: 1,
+    generationVersion: MOD_SPEC_VERSION,
     mod: {
       id: makeModId(`${tag}_${shortId}`),
       name: `用户${tag}·${submission.name || '未命名设计'}`,

@@ -23,6 +23,7 @@ RELIC_POOL_LABELS = {
 def build_test_guide(spec: dict) -> dict:
     mod = spec["mod"]
     content = spec["content"]
+    generation_version = spec.get("generationVersion", "unknown")
     kind = content["kind"]
     content_id = content["id"]
     steps = [
@@ -103,6 +104,7 @@ def build_test_guide(spec: dict) -> dict:
     steps.extend(item["command"] for item in commands)
     return {
         "title": "快捷测试",
+        "generationVersion": generation_version,
         "consoleKey": "`",
         "modId": mod["id"],
         "modName": mod["name"],
@@ -118,6 +120,7 @@ def render_test_guide_markdown(guide: dict) -> str:
         f"# {guide['modName']} 快捷测试",
         "",
         f"MOD ID：`{guide['modId']}`",
+        f"生成规则：`{guide.get('generationVersion', 'unknown')}`",
         "",
         "1. 启动游戏并进入一局游戏。",
         "2. 按 `` ` `` 键打开控制台。",

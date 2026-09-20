@@ -235,6 +235,7 @@ export interface ModGenerationJob {
   } | null;
   testGuide: {
     title: string;
+    generationVersion?: string;
     consoleKey: string;
     modId: string;
     modName: string;

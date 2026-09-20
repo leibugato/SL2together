@@ -204,6 +204,7 @@ const generatedCard = buildRuleModSpec(
 );
 assert.equal(generatedCard.supported, true);
 assert.equal(generatedCard.version, 'modspec-v8');
+assert.equal(generatedCard.spec.generationVersion, 'modspec-v8');
 assert.match(generatedCard.spec.mod.id, /^sl2t_a1b2c3d4_/);
 assert.ok(generatedCard.spec.mod.name.includes('A1B2C3D4'));
 assert.ok(generatedCard.spec.mod.name.includes('飞刀连击'));
