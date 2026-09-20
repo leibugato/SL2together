@@ -59,6 +59,7 @@ class GeneratorTests(unittest.TestCase):
             card_code = (project / "src" / "Core" / "Models" / "Cards" / "Burning_strike.cs").read_text(encoding="utf-8")
             self.assertIn("CardKeyword.Exhaust", card_code)
             self.assertIn("AfterAutoPrePlayPhaseEnteredEarly", card_code)
+            self.assertIn("base.DynamicVars.Damage.UpgradeValueBy(3m)", card_code)
 
     def test_rejects_damage_on_power(self) -> None:
         spec = self.load("power_ward.json")

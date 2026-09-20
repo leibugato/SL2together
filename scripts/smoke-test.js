@@ -194,16 +194,23 @@ const generatedCard = buildRuleModSpec(
     ownerTag: 'A1B2C3D4',
     type: 'CARD',
     designText: '造成6点伤害。消耗。被消耗的时候，在自动出牌阶段自动打出。',
-    extra: { cost: 1, cardType: '攻击', rarity: '普通' },
+    extra: {
+      cost: 1,
+      cardType: '攻击',
+      rarity: '普通',
+      upgrade: '伤害 6 -> 8',
+    },
   }),
 );
 assert.equal(generatedCard.supported, true);
-assert.equal(generatedCard.version, 'modspec-v7');
+assert.equal(generatedCard.version, 'modspec-v8');
 assert.match(generatedCard.spec.mod.id, /^sl2t_a1b2c3d4_/);
 assert.ok(generatedCard.spec.mod.name.includes('A1B2C3D4'));
 assert.ok(generatedCard.spec.mod.name.includes('飞刀连击'));
 assert.ok(generatedCard.spec.content.id.includes('A1B2C3D4'));
 assert.equal(generatedCard.spec.content.card.effects[0].amount, 6);
+assert.equal(generatedCard.spec.content.card.effects[0].upgradeDelta, 2);
+assert.ok(generatedCard.spec.content.description.includes('{Damage:diff()}'));
 assert.ok(generatedCard.spec.content.card.keywords.includes('EXHAUST'));
 assert.ok(
   generatedCard.spec.content.card.behaviors.some(
@@ -211,6 +218,32 @@ assert.ok(
   ),
 );
 assert.equal(generatedCard.spec.content.card.pool, 'ColorlessCardPool');
+
+const generatedUpgradeText = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_upgrade_text',
+    ownerTag: 'A1B2C3D4',
+    type: 'CARD',
+    designText: '造成6点伤害。升级后造成8点伤害。',
+    extra: { cost: 1, cardType: '攻击', rarity: '普通' },
+  }),
+);
+assert.equal(generatedUpgradeText.supported, true);
+assert.equal(generatedUpgradeText.spec.content.card.effects[0].upgradeDelta, 2);
+assert.ok(!generatedUpgradeText.spec.content.description.includes('升级后'));
+
+const generatedUpgradeBlock = buildRuleModSpec(
+  baseSubmission({
+    _id: 'submission_upgrade_block',
+    ownerTag: 'A1B2C3D4',
+    type: 'CARD',
+    designText: '获得5点格挡。升级后获得8点格挡。',
+    extra: { cost: 1, cardType: '技能', rarity: '普通' },
+  }),
+);
+assert.equal(generatedUpgradeBlock.supported, true);
+assert.equal(generatedUpgradeBlock.spec.content.card.effects[0].upgradeDelta, 3);
+assert.ok(generatedUpgradeBlock.spec.content.description.includes('{Block:diff()}'));
 
 const generatedIroncladCard = buildRuleModSpec(
   baseSubmission({

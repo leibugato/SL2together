@@ -10,6 +10,7 @@
     "knowledge:build": "node scripts/build-sl2-knowledge.js",
     "knowledge:check": "node scripts/check-sl2-knowledge.js",
     "typecheck": "tsc --noEmit",
+    "release:preflight": "node scripts/release-preflight.js",
     "test": "node scripts/smoke-test.js && node scripts/check-sl2-knowledge.js && npm run check:mod-builder"
   },
   "engines": {

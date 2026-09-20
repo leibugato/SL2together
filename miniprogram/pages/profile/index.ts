@@ -72,7 +72,7 @@ Page({
   showDeleteGuide() {
     wx.showModal({
       title: '删除提交',
-      content: '进入任意提交详情，点击“删除记录”即可软删除。正式上线前还需要根据运营策略补齐账号级数据清理入口。',
+      content: '进入任意提交详情，点击“删除记录”即可软删除该条内容。账号级数据清理和客服处理按正式版隐私保护指引执行。',
       showCancel: false,
       confirmText: '知道了',
     });

@@ -232,3 +232,13 @@ AI_API_KEY=你的密钥
 ### 评估一直停在评估中
 
 确认 `evaluationRunner` 已部署，`AI_PROVIDER=mock` 时不需要 API Key。检查云函数日志中的 `jobId` 和错误码。
+
+## 11. 正式版发布前
+
+运行：
+
+```powershell
+npm run release:preflight
+```
+
+仓库级检查通过后，继续按 `docs/formal-release-checklist.md` 完成云函数环境变量、数据库权限、隐私保护指引、体验版和正式审核配置。

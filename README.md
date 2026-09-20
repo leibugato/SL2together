@@ -59,6 +59,7 @@ npm run check:cloud
 npm run check:miniprogram
 npm run knowledge:build
 npm run knowledge:check
+npm run release:preflight
 npm test
 ```
 
@@ -71,5 +72,6 @@ npm test
 - `docs/database-schema.md`
 - `docs/ai-provider-and-knowledge-base.md`
 - `docs/admin-data-export.md`
+- `docs/formal-release-checklist.md`
 - `mod-builder/README.md`
 - `mod-builder/cloudbase.md`

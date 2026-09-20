@@ -112,7 +112,7 @@ const KEYWORD_MAP = [
   [/永恒/, 'ETERNAL'],
 ];
 
-const MOD_SPEC_VERSION = 'modspec-v7';
+const MOD_SPEC_VERSION = 'modspec-v8';
 
 const EFFECT_ORDER_PATTERNS = {
   DAMAGE: /造成|攻击/,
@@ -132,6 +132,20 @@ const EFFECT_ORDER_PATTERNS = {
   LOSE_HP_ALL_ENEMIES: /所有敌人.*(?:失去|损失).*生命|(?:失去|损失).*生命.*所有敌人/,
   LOSE_HP: /失去.*生命/,
   GAIN_GOLD: /获得.*金币|\d+\s*金币/,
+};
+
+const UPGRADEABLE_EFFECTS = new Set([
+  'DAMAGE',
+  'GAIN_BLOCK',
+  'DRAW',
+  'GAIN_ENERGY',
+]);
+
+const UPGRADE_LABELS = {
+  DAMAGE: '伤害|攻击',
+  GAIN_BLOCK: '格挡',
+  DRAW: '抽',
+  GAIN_ENERGY: '能量|费用',
 };
 
 function textOf(submission) {
@@ -183,6 +197,108 @@ function detectAllEnemiesHpLoss(text) {
   return extractNumber(text, patterns[0], 0, 999) ||
     extractNumber(text, patterns[1], 0, 999) ||
     extractNumber(text, patterns[2], 0, 999);
+}
+
+function positiveDelta(value) {
+  const number = Math.round(Number(value));
+  if (!Number.isFinite(number) || number < 1) return null;
+  return Math.min(20, number);
+}
+
+function upgradeContext(extraUpgrade, text) {
+  const clauses = Array.from(
+    String(text || '').matchAll(/(?:升级后|升级时)[^。！？\n]{0,80}/g),
+    (match) => match[0],
+  );
+  return [String(extraUpgrade || '').trim(), ...clauses].filter(Boolean).join('\n');
+}
+
+function detectUpgradeDelta(extraUpgrade, text, effectType, baseAmount, allowUnlabeled) {
+  const source = upgradeContext(extraUpgrade, text);
+  if (!source) return null;
+  const label = UPGRADE_LABELS[effectType];
+  if (!label) return null;
+  const base = Number(baseAmount);
+
+  const pair = source.match(
+    new RegExp(
+      `(?:${label})[^。；\\n]{0,24}?(\\d+)\\s*(?:->|→|变为|提高到|提高至|到)\\s*(\\d+)`,
+    ),
+  );
+  if (pair) {
+    return positiveDelta(Number(pair[2]) - Number(pair[1]));
+  }
+
+  const increase = source.match(
+    new RegExp(`(?:${label})[^。；\\n]{0,24}?(?:提高|增加|\\+)\\s*(\\d+)`),
+  );
+  if (increase) {
+    return positiveDelta(increase[1]);
+  }
+
+  if (effectType === 'DRAW') {
+    const drawPair = source.match(
+      /抽\s*(\d+)\s*张[^。；\n]{0,16}(?:->|→|变为|到)\s*抽?\s*(\d+)\s*张/,
+    );
+    if (drawPair) {
+      return positiveDelta(Number(drawPair[2]) - Number(drawPair[1]));
+    }
+    const drawTarget = source.match(/抽\s*(\d+)\s*张/);
+    if (drawTarget && Number.isFinite(base)) {
+      return positiveDelta(Number(drawTarget[1]) - base);
+    }
+  } else {
+    const target = source.match(new RegExp(`(\\d+)\\s*(?:点)?(?:${label})`));
+    if (target && Number.isFinite(base)) {
+      return positiveDelta(Number(target[1]) - base);
+    }
+  }
+
+  if (!allowUnlabeled) return null;
+  const genericPair = source.match(/(\d+)\s*(?:->|→|变为|提高到|提高至|到)\s*(\d+)/);
+  if (genericPair) {
+    return positiveDelta(Number(genericPair[2]) - Number(genericPair[1]));
+  }
+  const genericTarget = source.trim().match(/^(\d+)$/);
+  if (genericTarget && Number.isFinite(base)) {
+    return positiveDelta(Number(genericTarget[1]) - base);
+  }
+  return null;
+}
+
+function buildCardDescription(description, effects) {
+  const original = String(description || '').trim();
+  if (!original) return '';
+  let result = original.replace(/(?:升级后|升级时)[^。！？\n]*[。！？]?/g, '').trim();
+
+  const replacements = {
+    DAMAGE: {
+      pattern: /(\d+)\s*(点)?伤害/,
+      replace: (_match, _point, point) =>
+        `{Damage:diff()}${point ? '点' : ''}伤害`,
+    },
+    GAIN_BLOCK: {
+      pattern: /(\d+)\s*(点)?格挡/,
+      replace: (_match, _point, point) =>
+        `{Block:diff()}${point ? '点' : ''}格挡`,
+    },
+    DRAW: {
+      pattern: /抽\s*(\d+)\s*张/,
+      replace: () => '抽{Cards:diff()}张',
+    },
+    GAIN_ENERGY: {
+      pattern: /(\d+)\s*(点)?(能量|费用)/,
+      replace: (_match, _point, point, label) =>
+        `{Energy:diff()}${point ? '点' : ''}${label}`,
+    },
+  };
+
+  for (const effect of effects) {
+    const replacement = replacements[effect.type];
+    if (!replacement) continue;
+    result = result.replace(replacement.pattern, replacement.replace);
+  }
+  return result || original;
 }
 
 function normalizeCardType(value, text) {
@@ -441,6 +557,22 @@ function buildCardSpec(submission) {
     });
   }
 
+  const upgradeableEffects = effects.filter((effect) =>
+    UPGRADEABLE_EFFECTS.has(effect.type),
+  );
+  for (const effect of upgradeableEffects) {
+    const upgradeDelta = detectUpgradeDelta(
+      extra.upgrade,
+      text,
+      effect.type,
+      effect.amount,
+      upgradeableEffects.length === 1,
+    );
+    if (upgradeDelta) {
+      effect.upgradeDelta = upgradeDelta;
+    }
+  }
+
   effects.sort((left, right) => {
     const leftMatch = text.match(EFFECT_ORDER_PATTERNS[left.type] || /$^/);
     const rightMatch = text.match(EFFECT_ORDER_PATTERNS[right.type] || /$^/);
@@ -463,7 +595,7 @@ function buildCardSpec(submission) {
     kind: 'CARD',
     id: contentId(submission, 'CARD'),
     name: submission.name || '未命名卡牌',
-    description: submission.designText,
+    description: buildCardDescription(submission.designText, effects),
     card: {
       cost: Math.max(0, Math.min(9, Number(extra.cost) || (damage ? 1 : 0))),
       type: normalizeCardType(extra.cardType, text),
